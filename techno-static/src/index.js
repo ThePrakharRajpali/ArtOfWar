@@ -4,8 +4,10 @@ import './index.css';
 
 function Square(props) {
 	return (
-		<button className={props.isLake ? "squarelake" : "squarefree"}>
-			{props.value}
+    <button 
+      className={props.isLake ? "squarelake" : "squarefree"} 
+      onClick={ (props.onClick) }>
+			{props.value.piece}
 		</button>
 		);
 }
@@ -14,15 +16,43 @@ class Board extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			squares: makearray(),
+      squares: makearray(),
+      pieces: makearray()
 		};
-	}
+  }
+  
+  getPieces(){
+    for(var i=0; i<10; i++){
+      for(var j=0; j<12; j++){
+        if(this.state.squares[i][j].piece.piece != null){
+          this.state.pieces.push(this.state.squares[i][j].piece);
+        }
+      }
+    }
+  }
+
+  addPiece(i, j){
+    if(this.state.pieces.length <= 40){
+      this.square[i][j].piece = {
+        piece: "P",
+        x: j,
+        y: i
+      }
+    }
+    else {
+      console.log("Can't add any more pieces");
+      return;
+    }
+  }
+
+  
 
 	renderSquare(i, j) {
 		return(
 			<Square
-				value={this.state.squares[i][j].piece}
-				isLake={this.state.squares[i][j].isLake}
+				value={this.state.squares[i][j].piece.piece}
+        isLake={this.state.squares[i][j].isLake}
+        onClick= {(i, j) => this.addPiece()}
 			/>
 			);
 	}
@@ -73,7 +103,11 @@ function makearray() {
 		for(var j =0; j<10;j++) {
 			let square = {
 				isLake: isLake(i,j),
-				piece: null,
+				piece: {
+          piece: null,
+          x: j,
+          y: i
+        },
 			};
 
 			row.push(square);
