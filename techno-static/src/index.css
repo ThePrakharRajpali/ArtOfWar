@@ -1,39 +1,54 @@
 .board-row:after {
-    clear: both;
-    content: "";
-    display: table;
-  }
-  
-  .squarefree {
-    background: #fff;
-    border: 1px solid #999;
-    float: left;
-    font-size: 12px;
-    font-weight: bold;
-    line-height: 34px;
-    height: 34px;
-    margin-right: -1px;
-    margin-top: -1px;
-    padding: 0;
-    text-align: center;
-    width: 34px;
-  }
-  
-  .squarelake {
-    background: #00f;
-    border: 1px solid #999;
-    float: left;
-    font-size: 12px;
-    font-weight: bold;
-    line-height: 34px;
-    height: 34px;
-    margin-right: -1px;
-    margin-top: -1px;
-    padding: 0;
-    text-align: center;
-    width: 34px;
-  }
-  
-  .squarefree:focus {
-    background: #ddd;
-  }
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.squarefree {
+  background: #fff;
+  border: 1px solid #999;
+  float: left;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.squarelake {
+  background: #00f;
+  border: 1px solid #999;
+  float: left;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.squarehighlighted {
+  background: #000;
+  border: 1px solid #999;
+  float: left;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.squarefree:focus {
+  background: #ddd;
+}
