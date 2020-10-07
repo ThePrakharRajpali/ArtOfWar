@@ -18,6 +18,10 @@ class Board extends React.Component {
 			pieces: makepieces(),
 			isListening: false,
 			lastClicked: null,
+			isRedSetup: true,
+			isBlueSetup: true,
+			numRed: 0,
+			numBlue: 0,
 		};
 	}
 
@@ -49,56 +53,120 @@ class Board extends React.Component {
 			);
 	}
 
-	handleClick(i,j) {
-		if(!this.state.isListening) {
-			if(this.state.squares[10*i + j].pieceid===null || this.state.squares[10*i + j].isLake===true) {
-				return;
-			} else {
-				let newSquares = this.state.squares.slice();
-				newSquares[10*i + j].isClicked = true;
-				if(j<9 && !this.state.squares[10*i + j +1].isLake && (this.state.squares[10*i + j + 1].pieceid===null)) {
-					newSquares[10*i + j + 1].isHighlighted = true;
-				}
-				if(j>0 && !this.state.squares[10*i + j -1].isLake && (this.state.squares[10*i + j - 1].pieceid===null)) {
-					newSquares[10*i + j - 1].isHighlighted = true;
-				}
-				if(i<11 && !this.state.squares[10*i + j +10].isLake && (this.state.squares[10*i + j + 10].pieceid===null)) {
-					newSquares[10*i + j + 10].isHighlighted = true;
-				}
-				if(i>0 && !this.state.squares[10*i + j -10].isLake && (this.state.squares[10*i + j -10].pieceid===null)) {
-					newSquares[10*i + j - 10].isHighlighted = true;
-				}
+	blueSetup(i, j) {
+		let blueCount = this.state.numBlue;
+		blueCount++;
+		let newPieces = this.state.pieces.slice();
+		let newSquares = this.state.squares.slice();
+		let piece = {
+			id: (10*i + j),
+			rank: 10,
+			pos: (10*i+j),
+			isBlue: true,
+		};
+		newPieces.push(piece);
 
-				this.setState({
-					squares: newSquares,
-					pieces: this.state.pieces,
-					isListening: true,
-					lastClicked: (10*i+j),
-					});
-				}
-				return;
-			} else {
-				let newSquares = this.state.squares.slice();
-				let newPieces = this.state.pieces.slice();
-				if(this.state.squares[10*i + j].isHighlighted) {
-					newSquares[10*i + j].pieceid = this.state.squares[this.state.lastClicked].pieceid;
-					newSquares[this.state.lastClicked].pieceid = null;
-					for(var l = 0;l<newPieces.length;l++) {
-						if(newPieces[l].id === newSquares[10*i + j].pieceid){
-							newPieces[l].pos = (10*i + j);
+		newSquares[10*i + j].pieceid = (10*i + j);
+
+		this.setState({
+			squares: newSquares,
+			pieces: newPieces,
+			isListening: false,
+			lastClicked: null,
+			isBlueSetup: !(blueCount >= 5),
+			numBlue: blueCount,
+		});
+
+		return;
+	}
+
+	redSetup(i, j) {
+		let redCount = this.state.numRed;
+		redCount++;
+		let newPieces = this.state.pieces.slice();
+		let newSquares = this.state.squares.slice();
+		let piece = {
+			id: (10*i + j),
+			rank: 10,
+			pos: (10*i+j),
+			isBlue: false,
+		};
+		newPieces.push(piece);
+
+		newSquares[10*i + j].pieceid = (10*i + j);
+
+		this.setState({
+			squares: newSquares,
+			pieces: newPieces,
+			isListening: false,
+			lastClicked: null,
+			isRedSetup: !(redCount >= 5),
+			numRed: redCount,
+		});
+
+		return;
+	}
+
+	handleClick(i,j) {
+		if(this.state.isBlueSetup && (10*i+j)<=39) {
+			this.blueSetup(i, j);
+			return;
+		} else if(this.state.isRedSetup && (10*i + j>=79)) {
+			this.redSetup(i, j);
+			return;	
+		} else{
+				if(!this.state.isListening) {
+						if(this.state.squares[10*i + j].pieceid===null || this.state.squares[10*i + j].isLake===true) {
+							return;
+						} else {
+							let newSquares = this.state.squares.slice();
+							newSquares[10*i + j].isClicked = true;
+							if(j<9 && !this.state.squares[10*i + j +1].isLake && (this.state.squares[10*i + j + 1].pieceid===null)) {
+								newSquares[10*i + j + 1].isHighlighted = true;
+							}
+							if(j>0 && !this.state.squares[10*i + j -1].isLake && (this.state.squares[10*i + j - 1].pieceid===null)) {
+								newSquares[10*i + j - 1].isHighlighted = true;
+							}
+							if(i<11 && !this.state.squares[10*i + j +10].isLake && (this.state.squares[10*i + j + 10].pieceid===null)) {
+								newSquares[10*i + j + 10].isHighlighted = true;
+							}
+							if(i>0 && !this.state.squares[10*i + j -10].isLake && (this.state.squares[10*i + j -10].pieceid===null)) {
+								newSquares[10*i + j - 10].isHighlighted = true;
+							}
+			
+							this.setState({
+								squares: newSquares,
+								pieces: this.state.pieces,
+								isListening: true,
+								lastClicked: (10*i+j),
+								isSetup: false,
+								});
+							}
+							return;
+						} else {
+							let newSquares = this.state.squares.slice();
+							let newPieces = this.state.pieces.slice();
+							if(this.state.squares[10*i + j].isHighlighted) {
+								newSquares[10*i + j].pieceid = this.state.squares[this.state.lastClicked].pieceid;
+								newSquares[this.state.lastClicked].pieceid = null;
+								for(var l = 0;l<newPieces.length;l++) {
+									if(newPieces[l].id === newSquares[10*i + j].pieceid){
+										newPieces[l].pos = (10*i + j);
+									}
+								}
+							}
+							for(let i =0;i<120;i++)
+								newSquares[i].isHighlighted = false;
+							this.setState({
+								squares: newSquares,
+								pieces: newPieces,
+								isListening: false,
+								lastClicked: null,
+								isSetup: false,
+							});
+							return;
 						}
-					}
 				}
-				for(let i =0;i<120;i++)
-					newSquares[i].isHighlighted = false;
-				this.setState({
-					squares: newSquares,
-					pieces: newPieces,
-					isListening: false,
-					lastClicked: null,
-				});
-				return;
-			}
 	}
 
 	render() {
@@ -137,21 +205,11 @@ function makearray() {
 			board.push(square);
 		}
 	}
-	board[15].pieceid = "B_1";
 	return board;
 }
 
-function makepieces() {
+function makepieces() { //id, rank, pos
 	let pieces = [];
-
-	let piece = {
-		id: "B_1",
-		rank: 11,
-		pos: 15,
-	};
-
-	pieces.push(piece);
-
 	return pieces;
 }
 
