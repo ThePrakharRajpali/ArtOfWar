@@ -311,22 +311,8 @@ function makearray() {
 	return board;
 }
 
-function makepieces() { //rank, pos, isBlue, isAlive
-	let pieces = [];
-	board[15].pieceid = "B_1";
-	return board;
-}
-
 function makepieces() {
 	let pieces = [];
-
-	let piece = {
-		id: "B_1",
-		rank: 11,
-		pos: 15,
-	};
-
-	pieces.push(piece);
 	return pieces;
 }
 
