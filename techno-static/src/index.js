@@ -16,12 +16,15 @@ class Board extends React.Component {
 		this.state = {
 			squares: makearray(),
 			pieces: makepieces(),
+			redPieces: [],
+			bluePieces: [],
 			isListening: false,
 			lastClicked: null,
 			isRedSetup: true,
 			isBlueSetup: true,
 			numRed: 0,
 			numBlue: 0,
+			isGameOn: true,
 		};
 	}
 
@@ -64,26 +67,37 @@ class Board extends React.Component {
 			);
 	}
 
+	flagCaptured(){
+		if(this.state.bluePieces[0].isAlive === false || this.state.redPieces[0].isAlive === false){
+			return true;
+		}
+		return false;
+	}
+
 	blueSetup(i, j) {
 		if(this.state.squares[10*i+j].pieceid!==null) return;
 
 		let blueCount = this.state.numBlue;
 		blueCount++;
 		let newPieces = this.state.pieces.slice();
+		let newBluePieces = this.state.bluePieces.slice();
 		let newSquares = this.state.squares.slice();
+		
 		let piece = {
-			rank: Math.floor((Math.random() * 10) + 1),
+			rank: ( blueCount===1 )?0:Math.floor((Math.random() * 10) + 1),
 			pos: (10*i+j),
 			isBlue: true,
 			isAlive: true,
+			pieceType: null
 		};
 		newPieces.push(piece);
-
+		newBluePieces.push(piece);
 		newSquares[10*i + j].pieceid = this.state.pieces.length;
 
 		this.setState({
 			squares: newSquares,
 			pieces: newPieces,
+			bluePieces: newBluePieces,
 			isListening: false,
 			lastClicked: null,
 			isBlueSetup: !(blueCount >= 5),
@@ -99,20 +113,23 @@ class Board extends React.Component {
 		let redCount = this.state.numRed;
 		redCount++;
 		let newPieces = this.state.pieces.slice();
+		let newRedPieces = this.state.redPieces.slice();
 		let newSquares = this.state.squares.slice();
 		let piece = {
-			rank: Math.floor((Math.random() * 10) + 1),
+			rank: (redCount === 1)? 0 : Math.floor((Math.random() * 10) + 1),
 			pos: (10*i+j),
 			isBlue: false,
 			isAlive: true,
+			pieceType: null
 		};
 		newPieces.push(piece);
-
+		newRedPieces.push(piece);
 		newSquares[10*i + j].pieceid = this.state.pieces.length;
 
 		this.setState({
 			squares: newSquares,
 			pieces: newPieces,
+			redPieces: newRedPieces,
 			isListening: false,
 			lastClicked: null,
 			isRedSetup: !(redCount >= 5),
@@ -126,6 +143,9 @@ class Board extends React.Component {
 		if(this.state.squares[10*i + j].pieceid===null || this.state.squares[10*i + j].isLake===true) {
 			return;
 		} else {
+			if(this.state.pieces[this.state.squares[10*i + j].pieceid].rank === 0){
+				return;
+			}
 			let newSquares = this.state.squares.slice();
 			let newPieces = this.state.pieces.slice();
 			if(j<9 && !newSquares[10*i + j +1].isLake) {
@@ -199,11 +219,15 @@ class Board extends React.Component {
 			newSquares[i].isHighlighted = false;
 			newSquares[i].isPurple = false;
 		}
+
+		var gameOn = !this.flagCaptured();
+
 		this.setState({
 			squares: newSquares,
 			pieces: newPieces,
 			isListening: false,
 			lastClicked: null,
+			isGameOn: gameOn,
 		});
 		return;
 	}
@@ -216,13 +240,15 @@ class Board extends React.Component {
 			this.redSetup(i, j);
 			return;	
 		} else{
-			if(!this.state.isListening) {
-				this.firstClick(i, j);
-				return;
-			} else {
-				this.secondClick(i, j);
-				return;
-			}
+			if(this.state.isGameOn === true){
+				if(!this.state.isListening) {
+					this.firstClick(i, j);
+					return;
+				} else {
+					this.secondClick(i, j);
+					return;
+				}
+			}	
 		}
 	}
 
