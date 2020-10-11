@@ -254,7 +254,7 @@ class Board extends React.Component {
 
 	render() {
 		return (
-			<div>
+			<div className="table">
 				{this.renderRow(0)}
 				{this.renderRow(1)}
 				{this.renderRow(2)}
