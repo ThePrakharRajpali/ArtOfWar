@@ -10,13 +10,13 @@
   float: left;
   font-size: 12px;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
+  line-height: 45px;
+  height: 45px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 45px;
 }
 
 .squarelake {
@@ -25,13 +25,13 @@
   float: left;
   font-size: 12px;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
+  line-height: 45px;
+  height: 45px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 45px;
 }
 
 .squarehighlighted {
@@ -40,13 +40,13 @@
   float: left;
   font-size: 12px;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
+  line-height: 45px;
+  height: 45px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 45px;
 }
 
 .squareredoccupied {
@@ -55,13 +55,13 @@
   float: left;
   font-size: 12px;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
+  line-height: 45px;
+  height: 45px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 45px;
 }
 
 .squareblueoccupied {
@@ -70,13 +70,13 @@
   float: left;
   font-size: 12px;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
+  line-height: 45px;
+  height: 45px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 45px;
 }
 
 .squarehighlightattack {
@@ -85,15 +85,27 @@
   float: left;
   font-size: 12px;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
+  line-height: 45px;
+  height: 45px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 45px;
 }
 
 .squarefree:focus {
   background: #ddd;
 }
+
+.table{
+  background-color: #8ebff0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /*font-size: calc(10px + 2vmin);
+  color: white;*/
+}
+
