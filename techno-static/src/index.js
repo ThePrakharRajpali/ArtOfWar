@@ -21,6 +21,7 @@ class Board extends React.Component {
 			isSetup: true,
 			numRed: 0,
 			numBlue: 0,
+			isGameOn: true,
 		};
 	}
 
@@ -107,6 +108,10 @@ class Board extends React.Component {
 	// 		}
 	// 	}
 	// }
+
+	flagCaptured(){
+		return (this.state.pieces[0][6].isAlive === false || this.state.pieces[1][6].isAlive === false);
+	}
 
 	testSetup() {
 
@@ -198,22 +203,29 @@ class Board extends React.Component {
 			if(prevRank === nextRank) {
 				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
 				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
+
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
+
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[10*i+j].pieceid = null;
+
 				newSquares[this.state.lastClicked].hasPiece = false;
 				newSquares[10*i+j].hasPiece = false;
+
 			} else if(prevRank < nextRank) {
 				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
 				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
+
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[this.state.lastClicked].hasPiece = false;
 			} else {
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
+
 				newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
 				newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].pos = 10*i + j;
+				
 				newSquares[10*i+j].hasPiece = true;
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[this.state.lastClicked].hasPiece = false;
@@ -224,11 +236,13 @@ class Board extends React.Component {
 			newSquares[i].isHighlighted = false;
 			newSquares[i].isPurple = false;
 		}
+
 		this.setState({
 			squares: newSquares,
 			pieces: newPieces,
 			isListening: false,
 			lastClicked: null,
+			isGameOn: !this.flagCaptured(),
 		});
 		return;
 	}
@@ -237,7 +251,7 @@ class Board extends React.Component {
 		if(this.state.isSetup) {
 			// this.setup(i, j);
 			this.testSetup();
-		}else{
+		}else if(this.state.isGameOn){
 			if(!this.state.isListening) {
 				this.firstClick(i, j);
 				return;
