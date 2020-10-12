@@ -367,13 +367,18 @@ class Board extends React.Component {
 					curr++;
 				}
 				if(this.state.pieces[i/2][curr].rank +1 !== j){
-					return;
+					return
 				}
 
 				this.setState({
 					isListening: true,
 					pieceToAdd: [i/2, curr]
 				});
+		} else {
+			this.setState({
+				isListening: false,
+				pieceToAdd: null,
+			})
 		}
 	}
 	
