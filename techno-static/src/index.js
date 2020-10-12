@@ -16,8 +16,6 @@ class Board extends React.Component {
 		this.state = {
 			squares: makearray(),
 			pieces: makepieces(),
-			redPieces: [],
-			bluePieces: [],
 			isListening: false,
 			lastClicked: null,
 			isSetup: true,
@@ -68,74 +66,78 @@ class Board extends React.Component {
 			);
 	}
 
+	//Don't delete this.
+	// setup(i, j) { 
+	// 	if(this.state.squares[(10*i)+j].hasPiece===true || ((10*i+j)>39 && (10*i+j)<80))
+	// 		return;
+	// 	else {
+	// 		if((10*i+j) <= 39) {
+	// 			let blueCount = this.state.numBlue;
+	// 			let redCount = this.state.numRed;
+	// 			let newPieces = this.state.pieces;
+	// 			let newSquares = this.state.squares;
+	// 			newPieces[1][blueCount].pos = 10*i+j;
+	// 			newSquares[10*i+j].pieceid.isBlue = 1;
+	// 			newSquares[10*i+j].pieceid.index = blueCount;
+	// 			newSquares[10*i+j].hasPiece = true;
+	// 			blueCount++;
+
+	// 			this.setState({
+	// 				squares: newSquares,
+	// 				pieces: newPieces,
+	// 				numBlue: blueCount,
+	// 				isSetup: !(blueCount>=40 && redCount>=40),
+	// 			});
+	// 		} else {
+	// 			let blueCount = this.state.numBlue;
+	// 			let redCount = this.state.numRed;
+	// 			let newPieces = this.state.pieces;
+	// 			let newSquares = this.state.squares;
+	// 			newPieces[0][redCount].pos = 10*i+j;
+	// 			newSquares[10*i+j].pieceid.isBlue = 0;
+	// 			newSquares[10*i+j].pieceid.index = redCount;
+	// 			newSquares[10*i+j].hasPiece = true;
+	// 			redCount++;
+
+	// 			this.setState({
+	// 				squares: newSquares,
+	// 				pieces: newPieces,
+	// 				numRed: redCount,
+	// 				isSetup: !(blueCount>=40 && redCount>=40),
+	// 			});
+	// 		}
+	// 	}
+	// }
 
 	flagCaptured(){
-		if(this.state.bluePieces[0].isAlive === false || this.state.redPieces[0].isAlive === false){
-			return true;
+		return (this.state.pieces[0][6].isAlive === false || this.state.pieces[1][6].isAlive === false);
+	}
+
+	testSetup() {
+
+		let newSquares = this.state.squares;
+		let newPieces = this.state.pieces;
+
+		for(let iter=0;iter<40;iter++) {
+			newPieces[1][iter].pos = iter;
+			newSquares[iter].hasPiece = true;
+			newSquares[iter].pieceid.isBlue = 1;
+			newSquares[iter].pieceid.index = iter;
 		}
-		return false;
-	}
 
-	blueSetup(i, j) {
-		if(this.state.squares[10*i+j].pieceid!==null) return;
-
-		let blueCount = this.state.numBlue;
-		blueCount++;
-		let newPieces = this.state.pieces.slice();
-		let newBluePieces = this.state.bluePieces.slice();
-		let newSquares = this.state.squares.slice();
-		
-		let piece = {
-			rank: ( blueCount===1 )?0:Math.floor((Math.random() * 10) + 1),
-			pos: (10*i+j),
-			isBlue: true,
-			isAlive: true,
-			pieceType: null
-		};
-		newPieces.push(piece);
-		newBluePieces.push(piece);
-		newSquares[10*i + j].pieceid = this.state.pieces.length;
+		for(let iter=0;iter<40;iter++) {
+			newPieces[0][iter].pos = 119 - iter;
+			newSquares[119-iter].hasPiece = true;
+			newSquares[119-iter].pieceid.isBlue = 0;
+			newSquares[119-iter].pieceid.index = iter;
+		}
 
 		this.setState({
 			squares: newSquares,
 			pieces: newPieces,
-			bluePieces: newBluePieces,
-			isListening: false,
-			lastClicked: null,
-			isBlueSetup: !(blueCount >= 5),
-			numBlue: blueCount,
-		});
-
-		return;
-	}
-
-	redSetup(i, j) {
-		if(this.state.squares[10*i+j].pieceid!==null) return;
-
-		let redCount = this.state.numRed;
-		redCount++;
-		let newPieces = this.state.pieces.slice();
-		let newRedPieces = this.state.redPieces.slice();
-		let newSquares = this.state.squares.slice();
-		let piece = {
-			rank: (redCount === 1)? 0 : Math.floor((Math.random() * 10) + 1),
-			pos: (10*i+j),
-			isBlue: false,
-			isAlive: true,
-			pieceType: null
-		};
-		newPieces.push(piece);
-		newRedPieces.push(piece);
-		newSquares[10*i + j].pieceid = this.state.pieces.length;
-
-		this.setState({
-			squares: newSquares,
-			pieces: newPieces,
-			redPieces: newRedPieces,
-			isListening: false,
-			lastClicked: null,
-			isRedSetup: !(redCount >= 5),
-			numRed: redCount,
+			numRed: 40,
+			numBlue: 40,
+			isSetup: false,
 		});
 
 	}
@@ -144,9 +146,9 @@ class Board extends React.Component {
 		if(this.state.squares[10*i + j].hasPiece===false || this.state.squares[10*i + j].isLake===true) {
 			return;
 		} else {
-			if(this.state.pieces[this.state.squares[10*i + j].pieceid].rank === 0){
+			if(!this.state.pieces[this.state.squares[10*i+j].pieceid.isBlue][this.state.squares[10*i+j].pieceid.index].isMovable)
 				return;
-			}
+
 			let newSquares = this.state.squares.slice();
 			if(j<9 && !newSquares[10*i + j +1].isLake) {
 				if(newSquares[10*i+j+1].hasPiece===false) newSquares[10*i+j+1].isHighlighted=true;
@@ -201,22 +203,29 @@ class Board extends React.Component {
 			if(prevRank === nextRank) {
 				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
 				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
+
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
+
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[10*i+j].pieceid = null;
+
 				newSquares[this.state.lastClicked].hasPiece = false;
 				newSquares[10*i+j].hasPiece = false;
+
 			} else if(prevRank < nextRank) {
 				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
 				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
+
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[this.state.lastClicked].hasPiece = false;
 			} else {
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
+
 				newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
 				newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].pos = 10*i + j;
+				
 				newSquares[10*i+j].hasPiece = true;
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[this.state.lastClicked].hasPiece = false;
@@ -228,35 +237,28 @@ class Board extends React.Component {
 			newSquares[i].isPurple = false;
 		}
 
-		var gameOn = !this.flagCaptured();
-
 		this.setState({
 			squares: newSquares,
 			pieces: newPieces,
 			isListening: false,
 			lastClicked: null,
-			isGameOn: gameOn,
+			isGameOn: !this.flagCaptured(),
 		});
 		return;
 	}
 
 	handleClick(i,j) {
-		if(this.state.isBlueSetup && (10*i+j)<=39) {
-			this.blueSetup(i, j);
-			return;
-		} else if(this.state.isRedSetup && (10*i + j>=79)) {
-			this.redSetup(i, j);
-			return;	
-		} else{
-			if(this.state.isGameOn === true){
-				if(!this.state.isListening) {
-					this.firstClick(i, j);
-					return;
-				} else {
-					this.secondClick(i, j);
-					return;
-				}
-			}	
+		if(this.state.isSetup) {
+			// this.setup(i, j);
+			this.testSetup();
+		}else if(this.state.isGameOn){
+			if(!this.state.isListening) {
+				this.firstClick(i, j);
+				return;
+			} else {
+				this.secondClick(i, j);
+				return;
+			}
 		}
 	}
 
