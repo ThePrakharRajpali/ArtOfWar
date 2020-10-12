@@ -22,6 +22,9 @@ class Board extends React.Component {
 			numRed: 0,
 			numBlue: 0,
 			isGameOn: true,
+			initialRedPiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
+			initialBluePiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
+			pieceToAdd: null,
 		};
 	}
 
@@ -66,6 +69,52 @@ class Board extends React.Component {
 			);
 	}
 
+	renderPanelSquare(i, j){
+		if(i%2 === 0){
+			let disp = (i===0) ? "squareredoccupied" : "squareblueoccupied";
+			return (
+				<Square
+					value={j-1}
+					className={disp}
+					onClick={() => this.handlePanelClick(i, j)}
+				/>
+			);
+		} else if(i===1){
+			return(
+				<Square
+					className= "squarefree"
+					value = {this.state.initialRedPiece[j]}
+				/>
+			);
+		} else if(i===3){
+			return(
+				<Square
+					className= "squarefree"
+					value = {this.state.initialBluePiece[j]}
+				/>
+			);
+		}
+		
+	}
+
+	renderPanelRow(i){
+		return (
+			<div className="board-row panel-row">
+				{this.renderPanelSquare(i,0)}
+				{this.renderPanelSquare(i,1)}
+				{this.renderPanelSquare(i,2)}
+				{this.renderPanelSquare(i,3)}
+				{this.renderPanelSquare(i,4)}
+				{this.renderPanelSquare(i,5)}
+				{this.renderPanelSquare(i,6)}
+				{this.renderPanelSquare(i,7)}
+				{this.renderPanelSquare(i,8)}
+				{this.renderPanelSquare(i,9)}
+				{this.renderPanelSquare(i,10)}
+				{this.renderPanelSquare(i,11)}
+			</div>
+		);
+	}
 	//Don't delete this.
 	// setup(i, j) { 
 	// 	if(this.state.squares[(10*i)+j].hasPiece===true || ((10*i+j)>39 && (10*i+j)<80))
@@ -76,9 +125,9 @@ class Board extends React.Component {
 	// 			let redCount = this.state.numRed;
 	// 			let newPieces = this.state.pieces;
 	// 			let newSquares = this.state.squares;
-	// 			newPieces[1][blueCount].pos = 10*i+j;
+	// 			newPieces[1][numBlue].pos = 10*i+j;
 	// 			newSquares[10*i+j].pieceid.isBlue = 1;
-	// 			newSquares[10*i+j].pieceid.index = blueCount;
+	// 			newSquares[10*i+j].pieceid.index = numBlue;
 	// 			newSquares[10*i+j].hasPiece = true;
 	// 			blueCount++;
 
@@ -109,38 +158,79 @@ class Board extends React.Component {
 	// 	}
 	// }
 
+	setupAddPiece(i, j){
+		var newPieces = this.state.pieces.slice();
+		var newPieceToAdd = this.state.pieceToAdd.slice();
+		var pieceColor = newPieceToAdd[0];
+		var pieceIndex = newPieceToAdd[1];
+		var newSquares = this.state.squares.slice();
+		let blueCount = this.state.numBlue;
+		let redCount = this.state.numRed;
+		let redPieces = this.state.initialRedPiece.slice();
+		let bluePieces = this.state.initialBluePiece.slice();
+
+		if(newPieces[pieceColor][pieceIndex].pos === null){
+			if(pieceColor === 1 && 10*i + j <= 39){
+				newSquares[10*i + j].pieceid.isBlue = 1;
+				newSquares[10*i + j].pieceid.index = pieceIndex;
+				newSquares[10*i + j].hasPiece = true;
+				newPieces[pieceColor][pieceIndex].pos = 10*i + j;
+				blueCount++;
+				bluePieces[newPieces[pieceColor][pieceIndex].rank + 1] -= 1;
+			} else if(pieceColor === 0 && 10*i + j >= 80) {
+				newSquares[10*i + j].pieceid.isBlue = 0;
+				newSquares[10*i + j].pieceid.index = pieceIndex;
+				newSquares[10*i + j].hasPiece = true;
+				newPieces[pieceColor][pieceIndex].pos = 10*i + j;
+				redCount++;
+				redPieces[newPieces[pieceColor][pieceIndex].rank + 1] -= 1;
+			}
+
+			this.setState({
+				squares: newSquares,
+				pieces: newPieces,
+				numRed: redCount,
+				numBlue: blueCount,
+				isListening: false,
+				isSetup: !(blueCount>=40 && redCount >= 40),
+				initialBluePiece: bluePieces,
+				initialRedPiece: redPieces,
+			})
+		}
+	}
+
 	flagCaptured(){
 		return (this.state.pieces[0][6].isAlive === false || this.state.pieces[1][6].isAlive === false);
 	}
 
-	testSetup() {
+	// testSetup() {
 
-		let newSquares = this.state.squares;
-		let newPieces = this.state.pieces;
+	// 	let newSquares = this.state.squares;
+	// 	let newPieces = this.state.pieces;
 
-		for(let iter=0;iter<40;iter++) {
-			newPieces[1][iter].pos = iter;
-			newSquares[iter].hasPiece = true;
-			newSquares[iter].pieceid.isBlue = 1;
-			newSquares[iter].pieceid.index = iter;
-		}
+	// 	for(let iter=0;iter<40;iter++) {
+	// 		newPieces[1][iter].pos = iter;
+	// 		newSquares[iter].hasPiece = true;
+	// 		newSquares[iter].pieceid.isBlue = 1;
+	// 		newSquares[iter].pieceid.index = iter;
+	// 	}
 
-		for(let iter=0;iter<40;iter++) {
-			newPieces[0][iter].pos = 119 - iter;
-			newSquares[119-iter].hasPiece = true;
-			newSquares[119-iter].pieceid.isBlue = 0;
-			newSquares[119-iter].pieceid.index = iter;
-		}
+	// 	for(let iter=0;iter<40;iter++) {
+	// 		newPieces[0][iter].pos = 119 - iter;
+	// 		newSquares[119-iter].hasPiece = true;
+	// 		newSquares[119-iter].pieceid.isBlue = 0;
+	// 		newSquares[119-iter].pieceid.index = iter;
+	// 	}
 
-		this.setState({
-			squares: newSquares,
-			pieces: newPieces,
-			numRed: 40,
-			numBlue: 40,
-			isSetup: false,
-		});
+	// 	this.setState({
+	// 		squares: newSquares,
+	// 		pieces: newPieces,
+	// 		numRed: 40,
+	// 		numBlue: 40,
+	// 		isSetup: false,
+	// 	});
 
-	}
+	// }
 
 	firstClick(i, j) {
 		if(this.state.squares[10*i + j].hasPiece===false || this.state.squares[10*i + j].isLake===true) {
@@ -222,10 +312,9 @@ class Board extends React.Component {
 			} else {
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
-
+				
 				newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
 				newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].pos = 10*i + j;
-				
 				newSquares[10*i+j].hasPiece = true;
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[this.state.lastClicked].hasPiece = false;
@@ -249,8 +338,9 @@ class Board extends React.Component {
 
 	handleClick(i,j) {
 		if(this.state.isSetup) {
-			// this.setup(i, j);
-			this.testSetup();
+			if(this.state.isListening){
+				this.setupAddPiece(i, j);
+			}
 		}else if(this.state.isGameOn){
 			if(!this.state.isListening) {
 				this.firstClick(i, j);
@@ -262,21 +352,59 @@ class Board extends React.Component {
 		}
 	}
 
+	handlePanelClick(i, j){
+		let maxPieces = [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1];
+
+		if(!this.state.isListening){
+				let curr= 0
+				let k = 0;
+				while(k < j){
+					curr += maxPieces[k];
+					k++;
+				}
+
+				while(this.state.pieces[i/2][curr].pos !== null){
+					curr++;
+				}
+				if(this.state.pieces[i/2][curr].rank +1 !== j){
+					return
+				}
+
+				this.setState({
+					isListening: true,
+					pieceToAdd: [i/2, curr]
+				});
+		} else {
+			this.setState({
+				isListening: false,
+				pieceToAdd: null,
+			})
+		}
+	}
+	
 	render() {
 		return (
-			<div className="table">
-				{this.renderRow(0)}
-				{this.renderRow(1)}
-				{this.renderRow(2)}
-				{this.renderRow(3)}
-				{this.renderRow(4)}
-				{this.renderRow(5)}
-				{this.renderRow(6)}
-				{this.renderRow(7)}
-				{this.renderRow(8)}
-				{this.renderRow(9)}
-				{this.renderRow(10)}
-				{this.renderRow(11)}
+			<div>
+				<div className="table">
+					{this.renderRow(0)}
+					{this.renderRow(1)}
+					{this.renderRow(2)}
+					{this.renderRow(3)}
+					{this.renderRow(4)}
+					{this.renderRow(5)}
+					{this.renderRow(6)}
+					{this.renderRow(7)}
+					{this.renderRow(8)}
+					{this.renderRow(9)}
+					{this.renderRow(10)}
+					{this.renderRow(11)}
+				</div>
+				<div className="panel table">
+					{this.renderPanelRow(0)}
+					{this.renderPanelRow(1)}
+					{this.renderPanelRow(2)}
+					{this.renderPanelRow(3)}
+				</div>
 			</div>
 			);
 	}
