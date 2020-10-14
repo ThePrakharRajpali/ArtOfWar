@@ -232,6 +232,110 @@ class Board extends React.Component {
 
 	// }
 
+	findBlastRadius(i, j){
+		// 1 2 3
+		// 4 5 6
+		// 7 8 9
+		// (i+1, j-1) (i+1, j) (i+1, j+1)      +9 +10 +11
+		// (i  , j-1) (i  , j) (i  , j+1)      -1     +1
+		// (i-1, j-1) (i-1, j) (i-1, j+1)     -11 -10 -9
+		var blastRadius = [
+			{inRadius:true, toAdd:   9}, {inRadius:true, toAdd:  10}, {inRadius:true, toAdd: 11}, 
+			{inRadius:true, toAdd:  -1}, {inRadius:true, toAdd:   0}, {inRadius:true, toAdd:  1},
+			{inRadius:true, toAdd: -11}, {inRadius:true, toAdd: -10}, {inRadius:true, toAdd: -9},
+		]
+		if(i>0 && i<11){ 
+			//code
+			if(j>0 && j<9){ //all 9 squares
+				
+			} else if (j === 0){ // 2, 5, 8, 3, 6, 9
+				blastRadius = [
+					{inRadius:false, toAdd:   9}, {inRadius:true, toAdd:  10}, {inRadius:true, toAdd: 11}, 
+					{inRadius:false, toAdd:  -1}, {inRadius:true, toAdd:   0}, {inRadius:true, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius:true, toAdd: -10}, {inRadius:true, toAdd: -9},
+				]
+			} else { //1, 4, 7, 2, 5, 8
+				blastRadius = [
+					{inRadius:true, toAdd:   9}, {inRadius:true, toAdd:  10}, {inRadius:false, toAdd: 11}, 
+					{inRadius:true, toAdd:  -1}, {inRadius:true, toAdd:   0}, {inRadius:false, toAdd:  1},
+					{inRadius:true, toAdd: -11}, {inRadius:true, toAdd: -10}, {inRadius:false, toAdd: -9},
+				]
+			}
+		}else if(i===0){
+			if(j>0 && j<9){ //1, 2, 3, 4, 5, 6
+				blastRadius = [
+					{inRadius: true, toAdd:   9}, {inRadius: true, toAdd:  10}, {inRadius: true, toAdd: 11}, 
+					{inRadius: true, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius:false, toAdd: -10}, {inRadius:false, toAdd: -9},
+				]
+			} else if (j === 0){ // 2, 3, 5, 6
+				blastRadius = [
+					{inRadius:false, toAdd:   9}, {inRadius: true, toAdd:  10}, {inRadius: true, toAdd: 11}, 
+					{inRadius:false, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius:false, toAdd: -10}, {inRadius:false, toAdd: -9},
+				]
+			} else { // 1, 2, 4, 5
+				blastRadius = [
+					{inRadius: true, toAdd:   9}, {inRadius: true, toAdd:  10}, {inRadius:false, toAdd: 11}, 
+					{inRadius: true, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius:false, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius:false, toAdd: -10}, {inRadius:false, toAdd: -9},
+				]
+			}
+		} else {
+			if(j>0 && j<9){ // 4, 5, 6, 7, 8, 9
+				blastRadius = [
+					{inRadius:false, toAdd:   9}, {inRadius:false, toAdd:  10}, {inRadius:false, toAdd: 11}, 
+					{inRadius: true, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
+					{inRadius: true, toAdd: -11}, {inRadius: true, toAdd: -10}, {inRadius: true, toAdd: -9},
+				]
+			} else if (j === 0){ // 5, 6, 8, 9
+				blastRadius = [
+					{inRadius:false, toAdd:   9}, {inRadius:false, toAdd:  10}, {inRadius:false, toAdd: 11}, 
+					{inRadius:false, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius: true, toAdd: -10}, {inRadius: true, toAdd: -9},
+				]
+			} else { //4, 5, 7, 8
+				blastRadius = [
+					{inRadius:false, toAdd:   9}, {inRadius:false, toAdd:  10}, {inRadius:false, toAdd: 11}, 
+					{inRadius:false, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius: true, toAdd: -10}, {inRadius: true, toAdd: -9},
+				]
+			}
+		}
+
+		return(blastRadius);
+	}
+
+	blast(i, j){
+		var blastRadius = this.findBlastRadius();
+		let newSquares  = this.state.squares.slice();
+		let newPieces   = this.state.pieces.slice();
+		const bomb = newSquares[10*i + j].pieceid;
+		for(var k=0; k<9; k++){
+			var id = 10*i + j + blastRadius[k].toAdd;
+			var piece = newSquares[id].pieceid;
+
+			if(blastRadius[k].inRadius && piece !== null){
+				if(piece.isBlue !== bomb.isBlue){
+					newPieces[piece.isBlue][piece.index].isAlive = false;
+					newPieces[piece.isBlue][piece.index].pos = null;
+
+					newSquares[id].hasPiece = false;
+					newSquares[id].pieceid = null;
+				}
+			}
+
+		}
+
+		this.setState({
+			squares: newSquares,
+			pieces: newPieces,
+			isListening: false,
+			lastClicked: null,
+			isGameOn: !this.flagCaptured(),
+		});
+	}
+
 	firstClick(i, j) {
 		if(this.state.squares[10*i + j].hasPiece===false || this.state.squares[10*i + j].isLake===true) {
 			return;
@@ -290,34 +394,38 @@ class Board extends React.Component {
 			let prevRank = newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].rank;
 			let nextRank = newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].rank;
 
-			if(prevRank === nextRank) {
-				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
-				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
+			if(nextRank !== -1 || prevRank === 3){
+				if(prevRank === nextRank) {
+					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
+					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
 
-				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
-				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
+					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
+					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
 
-				newSquares[this.state.lastClicked].pieceid = null;
-				newSquares[10*i+j].pieceid = null;
+					newSquares[this.state.lastClicked].pieceid = null;
+					newSquares[10*i+j].pieceid = null;
 
-				newSquares[this.state.lastClicked].hasPiece = false;
-				newSquares[10*i+j].hasPiece = false;
+					newSquares[this.state.lastClicked].hasPiece = false;
+					newSquares[10*i+j].hasPiece = false;
 
-			} else if(prevRank < nextRank) {
-				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
-				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
+				} else if(prevRank < nextRank || prevRank !== 1) {
+					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
+					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
 
-				newSquares[this.state.lastClicked].pieceid = null;
-				newSquares[this.state.lastClicked].hasPiece = false;
-			} else {
-				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
-				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
-				
-				newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
-				newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].pos = 10*i + j;
-				newSquares[10*i+j].hasPiece = true;
-				newSquares[this.state.lastClicked].pieceid = null;
-				newSquares[this.state.lastClicked].hasPiece = false;
+					newSquares[this.state.lastClicked].pieceid = null;
+					newSquares[this.state.lastClicked].hasPiece = false;
+				} else {
+					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
+					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
+					
+					newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
+					newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].pos = 10*i + j;
+					newSquares[10*i+j].hasPiece = true;
+					newSquares[this.state.lastClicked].pieceid = null;
+					newSquares[this.state.lastClicked].hasPiece = false;
+				}
+			} else if(prevRank !== 3){
+				this.blast(i, j);
 			}
 		}
 
@@ -338,8 +446,10 @@ class Board extends React.Component {
 
 	handleClick(i,j) {
 		if(this.state.isSetup) {
-			if(this.state.isListening){
-				this.setupAddPiece(i, j);
+			if(this.state.squares[10*i + j].hasPiece === false){
+				if(this.state.isListening){
+					this.setupAddPiece(i, j);
+				}
 			}
 		}else if(this.state.isGameOn){
 			if(!this.state.isListening) {
@@ -358,15 +468,16 @@ class Board extends React.Component {
 		if(!this.state.isListening){
 				let curr= 0
 				let k = 0;
-				while(k < j){
+				while(k<12 && k < j){
 					curr += maxPieces[k];
 					k++;
 				}
 
-				while(this.state.pieces[i/2][curr].pos !== null){
+				while(curr<40 && this.state.pieces[i/2][curr].pos !== null){
 					curr++;
 				}
-				if(this.state.pieces[i/2][curr].rank +1 !== j){
+				
+				if(curr<40 && this.state.pieces[i/2][curr].rank +1 !== j){
 					return
 				}
 
