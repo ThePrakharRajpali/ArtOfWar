@@ -21,6 +21,11 @@ class Board extends React.Component {
 			isSetup: true,
 			numRed: 0,
 			numBlue: 0,
+			isGameOn: true,
+			initialRedPiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
+			initialBluePiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
+			pieceToAdd: null,
+			blueTurn: false,
 		};
 	}
 
@@ -65,6 +70,52 @@ class Board extends React.Component {
 			);
 	}
 
+	renderPanelSquare(i, j){
+		if(i%2 === 0){
+			let disp = (i===0) ? "squareredoccupied" : "squareblueoccupied";
+			return (
+				<Square
+					value={j-1}
+					className={disp}
+					onClick={() => this.handlePanelClick(i, j)}
+				/>
+			);
+		} else if(i===1){
+			return(
+				<Square
+					className= "squarefree"
+					value = {this.state.initialRedPiece[j]}
+				/>
+			);
+		} else if(i===3){
+			return(
+				<Square
+					className= "squarefree"
+					value = {this.state.initialBluePiece[j]}
+				/>
+			);
+		}
+		
+	}
+
+	renderPanelRow(i){
+		return (
+			<div className="board-row panel-row">
+				{this.renderPanelSquare(i,0)}
+				{this.renderPanelSquare(i,1)}
+				{this.renderPanelSquare(i,2)}
+				{this.renderPanelSquare(i,3)}
+				{this.renderPanelSquare(i,4)}
+				{this.renderPanelSquare(i,5)}
+				{this.renderPanelSquare(i,6)}
+				{this.renderPanelSquare(i,7)}
+				{this.renderPanelSquare(i,8)}
+				{this.renderPanelSquare(i,9)}
+				{this.renderPanelSquare(i,10)}
+				{this.renderPanelSquare(i,11)}
+			</div>
+		);
+	}
 	//Don't delete this.
 	// setup(i, j) { 
 	// 	if(this.state.squares[(10*i)+j].hasPiece===true || ((10*i+j)>39 && (10*i+j)<80))
@@ -75,9 +126,9 @@ class Board extends React.Component {
 	// 			let redCount = this.state.numRed;
 	// 			let newPieces = this.state.pieces;
 	// 			let newSquares = this.state.squares;
-	// 			newPieces[1][blueCount].pos = 10*i+j;
+	// 			newPieces[1][numBlue].pos = 10*i+j;
 	// 			newSquares[10*i+j].pieceid.isBlue = 1;
-	// 			newSquares[10*i+j].pieceid.index = blueCount;
+	// 			newSquares[10*i+j].pieceid.index = numBlue;
 	// 			newSquares[10*i+j].hasPiece = true;
 	// 			blueCount++;
 
@@ -108,33 +159,189 @@ class Board extends React.Component {
 	// 	}
 	// }
 
-	testSetup() {
+	setupAddPiece(i, j){
+		var newPieces = this.state.pieces.slice();
+		var newPieceToAdd = this.state.pieceToAdd.slice();
+		var pieceColor = newPieceToAdd[0];
+		var pieceIndex = newPieceToAdd[1];
+		var newSquares = this.state.squares.slice();
+		let blueCount = this.state.numBlue;
+		let redCount = this.state.numRed;
+		let redPieces = this.state.initialRedPiece.slice();
+		let bluePieces = this.state.initialBluePiece.slice();
 
-		let newSquares = this.state.squares;
-		let newPieces = this.state.pieces;
+		if(newPieces[pieceColor][pieceIndex].pos === null){
+			if(pieceColor === 1 && 10*i + j <= 39){
+				newSquares[10*i + j].pieceid.isBlue = 1;
+				newSquares[10*i + j].pieceid.index = pieceIndex;
+				newSquares[10*i + j].hasPiece = true;
+				newPieces[pieceColor][pieceIndex].pos = 10*i + j;
+				blueCount++;
+				bluePieces[newPieces[pieceColor][pieceIndex].rank + 1] -= 1;
+			} else if(pieceColor === 0 && 10*i + j >= 80) {
+				newSquares[10*i + j].pieceid.isBlue = 0;
+				newSquares[10*i + j].pieceid.index = pieceIndex;
+				newSquares[10*i + j].hasPiece = true;
+				newPieces[pieceColor][pieceIndex].pos = 10*i + j;
+				redCount++;
+				redPieces[newPieces[pieceColor][pieceIndex].rank + 1] -= 1;
+			}
 
-		for(let iter=0;iter<40;iter++) {
-			newPieces[1][iter].pos = iter;
-			newSquares[iter].hasPiece = true;
-			newSquares[iter].pieceid.isBlue = 1;
-			newSquares[iter].pieceid.index = iter;
+			this.setState({
+				squares: newSquares,
+				pieces: newPieces,
+				numRed: redCount,
+				numBlue: blueCount,
+				isListening: false,
+				isSetup: !(blueCount>=40 && redCount >= 40),
+				initialBluePiece: bluePieces,
+				initialRedPiece: redPieces,
+			})
+		}
+	}
+
+	flagCaptured(){
+		return (this.state.pieces[0][6].isAlive === false || this.state.pieces[1][6].isAlive === false);
+	}
+
+	// testSetup() {
+
+	// 	let newSquares = this.state.squares;
+	// 	let newPieces = this.state.pieces;
+
+	// 	for(let iter=0;iter<40;iter++) {
+	// 		newPieces[1][iter].pos = iter;
+	// 		newSquares[iter].hasPiece = true;
+	// 		newSquares[iter].pieceid.isBlue = 1;
+	// 		newSquares[iter].pieceid.index = iter;
+	// 	}
+
+	// 	for(let iter=0;iter<40;iter++) {
+	// 		newPieces[0][iter].pos = 119 - iter;
+	// 		newSquares[119-iter].hasPiece = true;
+	// 		newSquares[119-iter].pieceid.isBlue = 0;
+	// 		newSquares[119-iter].pieceid.index = iter;
+	// 	}
+
+	// 	this.setState({
+	// 		squares: newSquares,
+	// 		pieces: newPieces,
+	// 		numRed: 40,
+	// 		numBlue: 40,
+	// 		isSetup: false,
+	// 	});
+
+	// }
+
+	findBlastRadius(i, j){
+		// 1 2 3
+		// 4 5 6
+		// 7 8 9
+		// (i+1, j-1) (i+1, j) (i+1, j+1)      +9 +10 +11
+		// (i  , j-1) (i  , j) (i  , j+1)      -1     +1
+		// (i-1, j-1) (i-1, j) (i-1, j+1)     -11 -10 -9
+		var blastRadius = [
+			{inRadius:true, toAdd:   9}, {inRadius:true, toAdd:  10}, {inRadius:true, toAdd: 11}, 
+			{inRadius:true, toAdd:  -1}, {inRadius:true, toAdd:   0}, {inRadius:true, toAdd:  1},
+			{inRadius:true, toAdd: -11}, {inRadius:true, toAdd: -10}, {inRadius:true, toAdd: -9},
+		]
+		if(i>0 && i<11){ 
+			//code
+			if(j>0 && j<9){ //all 9 squares
+				return blastRadius;
+			} else if (j === 0){ // 2, 5, 8, 3, 6, 9
+				blastRadius = [
+					{inRadius:false, toAdd:   9}, {inRadius:true, toAdd:  10}, {inRadius:true, toAdd: 11}, 
+					{inRadius:false, toAdd:  -1}, {inRadius:true, toAdd:   0}, {inRadius:true, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius:true, toAdd: -10}, {inRadius:true, toAdd: -9},
+				]
+			} else { //1, 4, 7, 2, 5, 8
+				blastRadius = [
+					{inRadius:true, toAdd:   9}, {inRadius:true, toAdd:  10}, {inRadius:false, toAdd: 11}, 
+					{inRadius:true, toAdd:  -1}, {inRadius:true, toAdd:   0}, {inRadius:false, toAdd:  1},
+					{inRadius:true, toAdd: -11}, {inRadius:true, toAdd: -10}, {inRadius:false, toAdd: -9},
+				]
+			}
+		}else if(i===0){
+			if(j>0 && j<9){ //1, 2, 3, 4, 5, 6
+				blastRadius = [
+					{inRadius: true, toAdd:   9}, {inRadius: true, toAdd:  10}, {inRadius: true, toAdd: 11}, 
+					{inRadius: true, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius:false, toAdd: -10}, {inRadius:false, toAdd: -9},
+				]
+			} else if (j === 0){ // 2, 3, 5, 6
+				blastRadius = [
+					{inRadius:false, toAdd:   9}, {inRadius: true, toAdd:  10}, {inRadius: true, toAdd: 11}, 
+					{inRadius:false, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius:false, toAdd: -10}, {inRadius:false, toAdd: -9},
+				]
+			} else { // 1, 2, 4, 5
+				blastRadius = [
+					{inRadius: true, toAdd:   9}, {inRadius: true, toAdd:  10}, {inRadius:false, toAdd: 11}, 
+					{inRadius: true, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius:false, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius:false, toAdd: -10}, {inRadius:false, toAdd: -9},
+				]
+			}
+		} else {
+			if(j>0 && j<9){ // 4, 5, 6, 7, 8, 9
+				blastRadius = [
+					{inRadius:false, toAdd:   9}, {inRadius:false, toAdd:  10}, {inRadius:false, toAdd: 11}, 
+					{inRadius: true, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
+					{inRadius: true, toAdd: -11}, {inRadius: true, toAdd: -10}, {inRadius: true, toAdd: -9},
+				]
+			} else if (j === 0){ // 5, 6, 8, 9
+				blastRadius = [
+					{inRadius:false, toAdd:   9}, {inRadius:false, toAdd:  10}, {inRadius:false, toAdd: 11}, 
+					{inRadius:false, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius: true, toAdd: -10}, {inRadius: true, toAdd: -9},
+				]
+			} else { //4, 5, 7, 8
+				blastRadius = [
+					{inRadius:false, toAdd:   9}, {inRadius:false, toAdd:  10}, {inRadius:false, toAdd: 11}, 
+					{inRadius:false, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
+					{inRadius:false, toAdd: -11}, {inRadius: true, toAdd: -10}, {inRadius: true, toAdd: -9},
+				]
+			}
 		}
 
-		for(let iter=0;iter<40;iter++) {
-			newPieces[0][iter].pos = 119 - iter;
-			newSquares[119-iter].hasPiece = true;
-			newSquares[119-iter].pieceid.isBlue = 0;
-			newSquares[119-iter].pieceid.index = iter;
+		return(blastRadius);
+	}
+
+	blast(i, j){
+		var blastRadius = this.findBlastRadius();
+		let newSquares  = this.state.squares.slice();
+		let newPieces   = this.state.pieces.slice();
+		let bomb        = newSquares[10*i + j].pieceid;
+
+		for(var k=0; k<9; k++){
+
+			if(blastRadius[k].inRadius){
+				var id = 10*i + j + blastRadius[k].toAdd;
+				
+				if(newSquares[id].pieceid !== null && newSquares[id].pieceid.isBlue !== bomb.isBlue){
+					newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].isAlive = false;
+					newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].pos = null;
+
+					newSquares[id].hasPiece = false;
+					newSquares[id].pieceid = null;
+				}
+			}
+
+			id = 10 * i + j;
+			newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].isAlive = false;
+			newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].pos = null;
+
+			newSquares[id].hasPiece = false;
+			newSquares[id].pieceid = null;
 		}
 
 		this.setState({
 			squares: newSquares,
 			pieces: newPieces,
-			numRed: 40,
-			numBlue: 40,
-			isSetup: false,
+			isListening: false,
+			lastClicked: null,
+			isGameOn: !this.flagCaptured(),
 		});
-
 	}
 
 	firstClick(i, j) {
@@ -195,28 +402,47 @@ class Board extends React.Component {
 			let prevRank = newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].rank;
 			let nextRank = newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].rank;
 
-			if(prevRank === nextRank) {
-				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
-				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
+			if(prevRank === 1 && nextRank !== -1){
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
-				newSquares[this.state.lastClicked].pieceid = null;
-				newSquares[10*i+j].pieceid = null;
-				newSquares[this.state.lastClicked].hasPiece = false;
-				newSquares[10*i+j].hasPiece = false;
-			} else if(prevRank < nextRank) {
-				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
-				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
-				newSquares[this.state.lastClicked].pieceid = null;
-				newSquares[this.state.lastClicked].hasPiece = false;
-			} else {
-				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
-				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
+					
 				newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
 				newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].pos = 10*i + j;
 				newSquares[10*i+j].hasPiece = true;
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[this.state.lastClicked].hasPiece = false;
+			} else if(nextRank !== -1 || prevRank === 3){
+				if(prevRank === nextRank) {
+					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
+					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
+
+					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
+					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
+
+					newSquares[this.state.lastClicked].pieceid = null;
+					newSquares[10*i+j].pieceid = null;
+
+					newSquares[this.state.lastClicked].hasPiece = false;
+					newSquares[10*i+j].hasPiece = false;
+
+				} else if(prevRank < nextRank) {
+					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
+					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
+
+					newSquares[this.state.lastClicked].pieceid = null;
+					newSquares[this.state.lastClicked].hasPiece = false;
+				} else {
+					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
+					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
+					
+					newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
+					newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].pos = 10*i + j;
+					newSquares[10*i+j].hasPiece = true;
+					newSquares[this.state.lastClicked].pieceid = null;
+					newSquares[this.state.lastClicked].hasPiece = false;
+				}
+			} else if(prevRank !== 3){
+				this.blast(i, j);
 			}
 		}
 
@@ -224,45 +450,98 @@ class Board extends React.Component {
 			newSquares[i].isHighlighted = false;
 			newSquares[i].isPurple = false;
 		}
+
 		this.setState({
 			squares: newSquares,
 			pieces: newPieces,
 			isListening: false,
 			lastClicked: null,
+			isGameOn: !this.flagCaptured(),
 		});
 		return;
 	}
 
 	handleClick(i,j) {
 		if(this.state.isSetup) {
-			// this.setup(i, j);
-			this.testSetup();
-		}else{
+			if(this.state.squares[10*i + j].hasPiece === false){
+				if(this.state.isListening){
+					this.setupAddPiece(i, j);
+				}
+			}
+		}else if(this.state.isGameOn){
 			if(!this.state.isListening) {
+				if((this.state.blueTurn && this.state.squares[10*i+j].pieceid.isBlue === 1) ||  (!this.state.blueTurn && this.state.squares[10*i+j].pieceid.isBlue === 0)){
+					var blt = this.state.blueTurn;
+					this.setState({
+						blueTurn: !blt,
+					})
+				} else {
+					return;
+				}
 				this.firstClick(i, j);
 				return;
 			} else {
 				this.secondClick(i, j);
 				return;
 			}
+			
 		}
 	}
 
+	handlePanelClick(i, j){
+		let maxPieces = [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1];
+
+		if(!this.state.isListening){
+				let curr= 0
+				let k = 0;
+				while(k<12 && k < j){
+					curr += maxPieces[k];
+					k++;
+				}
+
+				while(curr<40 && this.state.pieces[i/2][curr].pos !== null){
+					curr++;
+				}
+				
+				if(curr<40 && this.state.pieces[i/2][curr].rank +1 !== j){
+					return
+				}
+
+				this.setState({
+					isListening: true,
+					pieceToAdd: [i/2, curr]
+				});
+		} else {
+			this.setState({
+				isListening: false,
+				pieceToAdd: null,
+			})
+		}
+	}
+	
 	render() {
 		return (
-			<div className="table">
-				{this.renderRow(0)}
-				{this.renderRow(1)}
-				{this.renderRow(2)}
-				{this.renderRow(3)}
-				{this.renderRow(4)}
-				{this.renderRow(5)}
-				{this.renderRow(6)}
-				{this.renderRow(7)}
-				{this.renderRow(8)}
-				{this.renderRow(9)}
-				{this.renderRow(10)}
-				{this.renderRow(11)}
+			<div>
+				<div className="table">
+					{this.renderRow(0)}
+					{this.renderRow(1)}
+					{this.renderRow(2)}
+					{this.renderRow(3)}
+					{this.renderRow(4)}
+					{this.renderRow(5)}
+					{this.renderRow(6)}
+					{this.renderRow(7)}
+					{this.renderRow(8)}
+					{this.renderRow(9)}
+					{this.renderRow(10)}
+					{this.renderRow(11)}
+				</div>
+				<div className="panel table">
+					{this.renderPanelRow(0)}
+					{this.renderPanelRow(1)}
+					{this.renderPanelRow(2)}
+					{this.renderPanelRow(3)}
+				</div>
 			</div>
 			);
 	}
