@@ -25,6 +25,7 @@ class Board extends React.Component {
 			initialRedPiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
 			initialBluePiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
 			pieceToAdd: null,
+			blueTurn: false,
 		};
 	}
 
@@ -247,7 +248,7 @@ class Board extends React.Component {
 		if(i>0 && i<11){ 
 			//code
 			if(j>0 && j<9){ //all 9 squares
-				
+				return blastRadius;
 			} else if (j === 0){ // 2, 5, 8, 3, 6, 9
 				blastRadius = [
 					{inRadius:false, toAdd:   9}, {inRadius:true, toAdd:  10}, {inRadius:true, toAdd: 11}, 
@@ -310,21 +311,28 @@ class Board extends React.Component {
 		var blastRadius = this.findBlastRadius();
 		let newSquares  = this.state.squares.slice();
 		let newPieces   = this.state.pieces.slice();
-		const bomb = newSquares[10*i + j].pieceid;
-		for(var k=0; k<9; k++){
-			var id = 10*i + j + blastRadius[k].toAdd;
-			var piece = newSquares[id].pieceid;
+		let bomb        = newSquares[10*i + j].pieceid;
 
-			if(blastRadius[k].inRadius && piece !== null){
-				if(piece.isBlue !== bomb.isBlue){
-					newPieces[piece.isBlue][piece.index].isAlive = false;
-					newPieces[piece.isBlue][piece.index].pos = null;
+		for(var k=0; k<9; k++){
+
+			if(blastRadius[k].inRadius){
+				var id = 10*i + j + blastRadius[k].toAdd;
+				
+				if(newSquares[id].pieceid !== null && newSquares[id].pieceid.isBlue !== bomb.isBlue){
+					newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].isAlive = false;
+					newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].pos = null;
 
 					newSquares[id].hasPiece = false;
 					newSquares[id].pieceid = null;
 				}
 			}
 
+			id = 10 * i + j;
+			newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].isAlive = false;
+			newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].pos = null;
+
+			newSquares[id].hasPiece = false;
+			newSquares[id].pieceid = null;
 		}
 
 		this.setState({
@@ -462,12 +470,21 @@ class Board extends React.Component {
 			}
 		}else if(this.state.isGameOn){
 			if(!this.state.isListening) {
+				if((this.state.blueTurn && this.state.squares[10*i+j].pieceid.isBlue === 1) ||  (!this.state.blueTurn && this.state.squares[10*i+j].pieceid.isBlue === 0)){
+					var blt = this.state.blueTurn;
+					this.setState({
+						blueTurn: !blt,
+					})
+				} else {
+					return;
+				}
 				this.firstClick(i, j);
 				return;
 			} else {
 				this.secondClick(i, j);
 				return;
 			}
+			
 		}
 	}
 
