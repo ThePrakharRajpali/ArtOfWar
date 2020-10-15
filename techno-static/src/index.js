@@ -394,7 +394,16 @@ class Board extends React.Component {
 			let prevRank = newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].rank;
 			let nextRank = newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].rank;
 
-			if(nextRank !== -1 || prevRank === 3){
+			if(prevRank === 1 && nextRank !== -1){
+				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
+				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
+					
+				newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
+				newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].pos = 10*i + j;
+				newSquares[10*i+j].hasPiece = true;
+				newSquares[this.state.lastClicked].pieceid = null;
+				newSquares[this.state.lastClicked].hasPiece = false;
+			} else if(nextRank !== -1 || prevRank === 3){
 				if(prevRank === nextRank) {
 					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
 					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
@@ -408,7 +417,7 @@ class Board extends React.Component {
 					newSquares[this.state.lastClicked].hasPiece = false;
 					newSquares[10*i+j].hasPiece = false;
 
-				} else if(prevRank < nextRank || prevRank !== 1) {
+				} else if(prevRank < nextRank) {
 					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
 					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
 
