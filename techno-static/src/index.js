@@ -233,115 +233,39 @@ class Board extends React.Component {
 
 	// }
 
-	findBlastRadius(i, j){
-		// 1 2 3
-		// 4 5 6
-		// 7 8 9
-		// (i+1, j-1) (i+1, j) (i+1, j+1)      +9 +10 +11
-		// (i  , j-1) (i  , j) (i  , j+1)      -1     +1
-		// (i-1, j-1) (i-1, j) (i-1, j+1)     -11 -10 -9
+	blast(i,j){
+		// 0 1 2
+		// 3 4 5
+		// 6 7 8
+
+		// i,j is coordinate of bomb.
+		var newPieces = this.state.pieces.slice();
+		var newSquares = this.state.squares.slice();
+		var bomb = newPieces[newSquares[10*i + j].pieceid.isBlue][newSquares[10*i+j].pieceid.index];
+
 		var blastRadius = [
-			{inRadius:true, toAdd:   9}, {inRadius:true, toAdd:  10}, {inRadius:true, toAdd: 11}, 
-			{inRadius:true, toAdd:  -1}, {inRadius:true, toAdd:   0}, {inRadius:true, toAdd:  1},
-			{inRadius:true, toAdd: -11}, {inRadius:true, toAdd: -10}, {inRadius:true, toAdd: -9},
-		]
-		if(i>0 && i<11){ 
-			//code
-			if(j>0 && j<9){ //all 9 squares
-				return blastRadius;
-			} else if (j === 0){ // 2, 5, 8, 3, 6, 9
-				blastRadius = [
-					{inRadius:false, toAdd:   9}, {inRadius:true, toAdd:  10}, {inRadius:true, toAdd: 11}, 
-					{inRadius:false, toAdd:  -1}, {inRadius:true, toAdd:   0}, {inRadius:true, toAdd:  1},
-					{inRadius:false, toAdd: -11}, {inRadius:true, toAdd: -10}, {inRadius:true, toAdd: -9},
-				]
-			} else { //1, 4, 7, 2, 5, 8
-				blastRadius = [
-					{inRadius:true, toAdd:   9}, {inRadius:true, toAdd:  10}, {inRadius:false, toAdd: 11}, 
-					{inRadius:true, toAdd:  -1}, {inRadius:true, toAdd:   0}, {inRadius:false, toAdd:  1},
-					{inRadius:true, toAdd: -11}, {inRadius:true, toAdd: -10}, {inRadius:false, toAdd: -9},
-				]
+			{toAdd:  9, inRadius: true}, {toAdd: 10, inRadius: true}, {toAdd:11, inRadius: true},
+			{toAdd: -1, inRadius: true}, {toAdd:  0, inRadius: true}, {toAdd: 1, inRadius: true},
+			{toAdd:-11, inRadius: true}, {toAdd:-10, inRadius: true}, {toAdd:-9, inRadius: true}
+		];
+
+		for(let k=0; k<9; k++){
+			if((i+1 > 11 && k<=2) || (i-1 < 0 && k>=6) || (j-1 < 0 && k%3 === 0) || (j+1 > 9 && k%3 === 2)){
+				blastRadius[k].inRadius = false;
 			}
-		}else if(i===0){
-			if(j>0 && j<9){ //1, 2, 3, 4, 5, 6
-				blastRadius = [
-					{inRadius: true, toAdd:   9}, {inRadius: true, toAdd:  10}, {inRadius: true, toAdd: 11}, 
-					{inRadius: true, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
-					{inRadius:false, toAdd: -11}, {inRadius:false, toAdd: -10}, {inRadius:false, toAdd: -9},
-				]
-			} else if (j === 0){ // 2, 3, 5, 6
-				blastRadius = [
-					{inRadius:false, toAdd:   9}, {inRadius: true, toAdd:  10}, {inRadius: true, toAdd: 11}, 
-					{inRadius:false, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
-					{inRadius:false, toAdd: -11}, {inRadius:false, toAdd: -10}, {inRadius:false, toAdd: -9},
-				]
-			} else { // 1, 2, 4, 5
-				blastRadius = [
-					{inRadius: true, toAdd:   9}, {inRadius: true, toAdd:  10}, {inRadius:false, toAdd: 11}, 
-					{inRadius: true, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius:false, toAdd:  1},
-					{inRadius:false, toAdd: -11}, {inRadius:false, toAdd: -10}, {inRadius:false, toAdd: -9},
-				]
-			}
-		} else {
-			if(j>0 && j<9){ // 4, 5, 6, 7, 8, 9
-				blastRadius = [
-					{inRadius:false, toAdd:   9}, {inRadius:false, toAdd:  10}, {inRadius:false, toAdd: 11}, 
-					{inRadius: true, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
-					{inRadius: true, toAdd: -11}, {inRadius: true, toAdd: -10}, {inRadius: true, toAdd: -9},
-				]
-			} else if (j === 0){ // 5, 6, 8, 9
-				blastRadius = [
-					{inRadius:false, toAdd:   9}, {inRadius:false, toAdd:  10}, {inRadius:false, toAdd: 11}, 
-					{inRadius:false, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
-					{inRadius:false, toAdd: -11}, {inRadius: true, toAdd: -10}, {inRadius: true, toAdd: -9},
-				]
-			} else { //4, 5, 7, 8
-				blastRadius = [
-					{inRadius:false, toAdd:   9}, {inRadius:false, toAdd:  10}, {inRadius:false, toAdd: 11}, 
-					{inRadius:false, toAdd:  -1}, {inRadius: true, toAdd:   0}, {inRadius: true, toAdd:  1},
-					{inRadius:false, toAdd: -11}, {inRadius: true, toAdd: -10}, {inRadius: true, toAdd: -9},
-				]
+
+			let m = 10*i +j + blastRadius[k].toAdd;
+
+			if(blastRadius[k].inRadius === true && newSquares[m].pieceid !== null && newSquares[m].pieceid.isBlue !== bomb.isBlue){
+				newPieces[newSquares[m].pieceid.isBlue][newSquares[m].pieceid.index].isAlive = false;
+				newPieces[newSquares[m].pieceid.isBlue][newSquares[m].pieceid.index].pos = null;
+
+				newSquares[m].hasPiece = false;
+				newSquares[m].pieceid = null;
 			}
 		}
 
-		return(blastRadius);
-	}
-
-	blast(i, j){
-		var blastRadius = this.findBlastRadius();
-		let newSquares  = this.state.squares.slice();
-		let newPieces   = this.state.pieces.slice();
-		let bomb        = newSquares[10*i + j].pieceid;
-
-		for(var k=0; k<9; k++){
-
-			if(blastRadius[k].inRadius){
-				var id = 10*i + j + blastRadius[k].toAdd;
-				
-				if(newSquares[id].pieceid !== null && newSquares[id].pieceid.isBlue !== bomb.isBlue){
-					newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].isAlive = false;
-					newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].pos = null;
-
-					newSquares[id].hasPiece = false;
-					newSquares[id].pieceid = null;
-				}
-			}
-
-			id = 10 * i + j;
-			newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].isAlive = false;
-			newPieces[newSquares[id].pieceid.isBlue][newSquares[id].pieceid.index].pos = null;
-
-			newSquares[id].hasPiece = false;
-			newSquares[id].pieceid = null;
-		}
-
-		this.setState({
-			squares: newSquares,
-			pieces: newPieces,
-			isListening: false,
-			lastClicked: null,
-			isGameOn: !this.flagCaptured(),
-		});
+		
 	}
 
 	firstClick(i, j) {
@@ -442,7 +366,18 @@ class Board extends React.Component {
 					newSquares[this.state.lastClicked].hasPiece = false;
 				}
 			} else if(prevRank !== 3){
-				this.blast(i, j);
+				//this.blast(i, j);
+				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
+				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
+
+				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
+				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
+
+				newSquares[this.state.lastClicked].pieceid = null;
+				newSquares[10*i+j].pieceid = null;
+
+				newSquares[this.state.lastClicked].hasPiece = false;
+				newSquares[10*i+j].hasPiece = false;
 			}
 		}
 
@@ -482,6 +417,12 @@ class Board extends React.Component {
 				return;
 			} else {
 				this.secondClick(i, j);
+				if(10*i + j === this.state.lastClicked){
+					var blt = this.state.blueTurn;
+					this.setState({
+						blueTurn: !blt,
+					})
+				}
 				return;
 			}
 			
@@ -535,8 +476,8 @@ class Board extends React.Component {
 					{this.renderRow(9)}
 					{this.renderRow(10)}
 					{this.renderRow(11)}
-				</div>
-				<div className="panel table">
+				{/* </div>
+				<div className="panel table"> */}
 					{this.renderPanelRow(0)}
 					{this.renderPanelRow(1)}
 					{this.renderPanelRow(2)}
