@@ -1,6 +1,10 @@
-import React from 'react';
+import React ,{ Component } from "react";
 import ReactDOM from 'react-dom';
 import './index.css';
+
+import io from "socket.io-client";
+
+var serverURI = "http://localhost:3001";
 
 function Square(props) {
 	return (
@@ -26,7 +30,27 @@ class Board extends React.Component {
 			initialBluePiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
 			pieceToAdd: null,
 			blueTurn: false,
+			//for creating room...........
+			grid: [],
+			mouseIsPressed: false,
+			curr_player: 0,
+			log_message: "",
+			initial_click: [-1, -1],
+			gameRunning: false,
+			Id: 0,
+			room_full: 0,
+			runningSamePc: false, // game being played is using sockets or on same pc
+			winner_color: 0, // 1: red, 2: blue
+			timeLimit: "20", //In mins
+
+			samePC: true,
+			player1Time: 1200, //Time in seconds
+			player2Time: 1200,
+			highlight: 0,
+			changetrigger: 0,
 		};
+		this.startSamePC = this.startSamePC.bind(this);
+		this.quitGame = this.quitGame.bind(this);
 	}
 
 	renderSquare(i, j) {
@@ -545,6 +569,195 @@ class Board extends React.Component {
 			</div>
 			);
 	}
+
+//Creating Room from here..............
+
+	resetStateVars() {
+		console.log("rest state vars");
+		const samePC = false;
+		const gameRunning = true;
+		const runningSamePc = false;
+		const curr_player = 0;
+		const winner_color = 0;
+		this.user = this.user === 1 ? 2 : 1;
+		this.me_ready = 0;
+		this.opp_ready = 0;
+
+		this.setState({
+		gameRunning,
+		samePC,
+		winner_color,
+		runningSamePc,
+		curr_player,
+		});
+	}
+
+	resetRoomState(timeLimitEntered) {
+		console.log("reset Room State");
+		const samePC = false;
+		const gameRunning = true;
+		const player1Time = parseInt(timeLimitEntered) * 60; //Time in seconds
+		const player2Time = parseInt(timeLimitEntered) * 60;
+		const runningSamePc = false;
+		const curr_player = 0;
+		const winner_color = 0;
+		this.user = this.user === 1 ? 2 : 1;
+		this.me_ready = 0;
+		this.opp_ready = 0;
+		this.setState({
+		  gameRunning,
+		  samePC,
+		  winner_color,
+		  player1Time,
+		  player2Time,
+		  runningSamePc,
+		  curr_player,
+		});
+	  }
+
+	joinRoom(roomId) {
+		console.log(roomId);
+		this.socket = io(serverURI);
+		this.socket.on("connect", () => {
+		  console.log("socket connected");
+		  this.socket.emit("send roomId", roomId, this.state);
+		  this.socket.once("user", (data, state) => {
+			this.resetStateVars();
+			this.user = data;
+			this.me_ready = 0;
+			this.opp_ready = 0;
+			this.setState(state);
+			console.log("Changing color");
+	
+			this.setState({ gameRunning: true });
+			this.setState({ Id: parseInt(roomId), room_full: 2 });
+			/*
+						Make below display of who is white and black user friendly
+					*/
+			let color = this.user === 1 ? "red" : "blue";
+	
+			this.socket.on("player ready", () => {
+			  this.opp_ready = 1;
+			  this.setState({ changetrigger: 1 });
+			  console.log("Ready states : ", this.me_ready, this.opp_ready);
+			  if (this.me_ready === 1) {
+				this.resetRoomState(this.state.timeLimit);
+				this.setState({ curr_player: 1 });
+			  }
+			});
+	
+			this.socket.on("second joined", () => {
+			  this.setState({ room_full: 2 });
+			  this.intervalID = setInterval(() => {
+				let player1Time = this.state.player1Time;
+				let player2Time = this.state.player2Time;
+	
+				if (this.state.curr_player === 1) {
+				  player1Time -= 1;
+				} else if (this.state.curr_player === 2) {
+				  player2Time -= 1;
+				}
+				this.setState({ player1Time, player2Time });
+				if (player1Time === 0 || player2Time === 0) {
+				  console.log("timeUp");
+				  clearInterval(this.intervalID);
+				  this.timeOver();
+				}
+			  }, 1000);
+			});
+		  });
+		  this.socket.on("surrender", (loser) => {
+			let winner = loser === 1 ? 2 : 1;
+			console.log("In socket surrender: winner: ", winner);
+			// this.setState({ winner_color: winner });
+			this.gameResult(winner);
+		  });
+		  this.socket.on("board changed", (state) => {
+			// console.log(state);
+			this.setState(state);
+		  });
+		  this.socket.on("opponent quit", () => {
+			this.quitGame();
+			alert("Opponent quits: You won !!");
+		  });
+		});
+	  }
+
+	  startNewRoom(timeLimitEntered) {
+		if (timeLimitEntered === "") timeLimitEntered = "20";
+		this.socket = io(serverURI);
+	
+		this.setState({ timeLimit: timeLimitEntered });
+	
+		this.resetRoomState(timeLimitEntered);
+		this.user = 0;
+		this.socket.on("connect", () => {
+		  console.log("socket connected");
+		  this.socket.emit("create room", this.state);
+		  this.socket.on("room created", (roomId) => {
+			this.setState({ Id: roomId, room_full: 1 });
+		  });
+		  this.socket.once("user", (data, state) => {
+			this.user = data;
+			console.log(data);
+	
+			this.setState({ gameRunning: true });
+			// this.setState(state);
+			/*
+						Make below display of who is white and black user friendly
+					*/
+			let color = this.user === 1 ? "red" : "blue";
+	
+			this.socket.on("player ready", () => {
+			  this.opp_ready = 1;
+			  this.setState({ changetrigger: 1 });
+			  console.log("In socket", this.me_ready, this.opp_ready);
+			  if (this.me_ready === 1) {
+				this.resetRoomState(this.state.timeLimit);
+				this.setState({ curr_player: 1 });
+			  }
+			});
+	
+			this.socket.on("second joined", () => {
+			  this.setState({ room_full: 2 });
+			  this.intervalID = setInterval(() => {
+				let player1Time = this.state.player1Time;
+				let player2Time = this.state.player2Time;
+	
+				if (this.state.curr_player === 1) {
+				  player1Time -= 1;
+				} else if (this.state.curr_player === 2) {
+				  player2Time -= 1;
+				}
+				this.setState({ player1Time, player2Time });
+				if (player1Time === 0 || player2Time === 0) {
+				  console.log("timeUp");
+				  clearInterval(this.intervalID);
+				  this.timeOver();
+				}
+			  }, 1000);
+			});
+		  });
+		  this.socket.on("surrender", (loser) => {
+			let winner = loser === 1 ? 2 : 1;
+			console.log("In socket surrender: winner: ", winner);
+			// this.setState({ winner_color: winner });
+			this.gameResult(winner);
+		  });
+		  this.socket.on("board changed", (state) => {
+			// console.log(state);
+			this.setState(state);
+		  });
+		  this.socket.on("opponent quit", () => {
+			this.quitGame();
+			alert("Opponent quits: You won !!");
+		  });
+		});
+	  }
+
+//Room creating code ends................
+
+
 }
 
 function makearray() {
