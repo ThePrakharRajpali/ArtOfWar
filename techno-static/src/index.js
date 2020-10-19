@@ -204,34 +204,34 @@ class Board extends React.Component {
 		return (this.state.pieces[0][6].isAlive === false || this.state.pieces[1][6].isAlive === false);
 	}
 
-	// testSetup() {
+	testSetup() {
 
-	// 	let newSquares = this.state.squares;
-	// 	let newPieces = this.state.pieces;
+		let newSquares = this.state.squares;
+		let newPieces = this.state.pieces;
 
-	// 	for(let iter=0;iter<40;iter++) {
-	// 		newPieces[1][iter].pos = iter;
-	// 		newSquares[iter].hasPiece = true;
-	// 		newSquares[iter].pieceid.isBlue = 1;
-	// 		newSquares[iter].pieceid.index = iter;
-	// 	}
+		for(let iter=0;iter<40;iter++) {
+			newPieces[1][iter].pos = iter;
+			newSquares[iter].hasPiece = true;
+			newSquares[iter].pieceid.isBlue = 1;
+			newSquares[iter].pieceid.index = iter;
+		}
 
-	// 	for(let iter=0;iter<40;iter++) {
-	// 		newPieces[0][iter].pos = 119 - iter;
-	// 		newSquares[119-iter].hasPiece = true;
-	// 		newSquares[119-iter].pieceid.isBlue = 0;
-	// 		newSquares[119-iter].pieceid.index = iter;
-	// 	}
+		for(let iter=0;iter<40;iter++) {
+			newPieces[0][iter].pos = 119 - iter;
+			newSquares[119-iter].hasPiece = true;
+			newSquares[119-iter].pieceid.isBlue = 0;
+			newSquares[119-iter].pieceid.index = iter;
+		}
 
-	// 	this.setState({
-	// 		squares: newSquares,
-	// 		pieces: newPieces,
-	// 		numRed: 40,
-	// 		numBlue: 40,
-	// 		isSetup: false,
-	// 	});
+		this.setState({
+			squares: newSquares,
+			pieces: newPieces,
+			numRed: 40,
+			numBlue: 40,
+			isSetup: false,
+		});
 
-	// }
+	}
 
 	blast(i,j){
 		// 0 1 2
@@ -314,6 +314,14 @@ class Board extends React.Component {
 		let lastSquare = this.state.squares[this.state.lastClicked];
 		let nextSquare = this.state.squares[10*i+j];
 
+		// if(!nextSquare.isHighlighted && !nextSquare.isPurple){
+		// 	// for(let i =0;i<120;i++) {
+		// 	// 	newSquares[i].isHighlighted = false;
+		// 	// 	newSquares[i].isPurple = false;
+		// 	// }
+		// 	return;
+		// }
+
 		if(nextSquare.isHighlighted) {
 			newSquares[10*i + j].pieceid = this.state.squares[this.state.lastClicked].pieceid;
 			newSquares[this.state.lastClicked].pieceid = null;
@@ -329,12 +337,15 @@ class Board extends React.Component {
 			if(prevRank === 1 && nextRank !== -1){
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
-					
+				
+			
 				newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
 				newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].pos = 10*i + j;
+				newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].kill += 1;
 				newSquares[10*i+j].hasPiece = true;
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[this.state.lastClicked].hasPiece = false;
+
 			} else if(nextRank !== -1 || prevRank === 3){
 				if(prevRank === nextRank) {
 					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
@@ -355,6 +366,8 @@ class Board extends React.Component {
 
 					newSquares[this.state.lastClicked].pieceid = null;
 					newSquares[this.state.lastClicked].hasPiece = false;
+
+					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].kill += 1;
 				} else {
 					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
 					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
@@ -364,9 +377,11 @@ class Board extends React.Component {
 					newSquares[10*i+j].hasPiece = true;
 					newSquares[this.state.lastClicked].pieceid = null;
 					newSquares[this.state.lastClicked].hasPiece = false;
+					newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].kills += 1;
 				}
 			} else if(prevRank !== 3){
 				//this.blast(i, j);
+
 				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
 				newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
 
@@ -396,13 +411,36 @@ class Board extends React.Component {
 		return;
 	}
 
+	checkAbility(){
+		var last = this.state.lastClicked;
+		var piece = this.state.pieces[this.state.squares[last].pieceid.isBlue][this.state.squares[last].pieceid.index];
+
+		return((piece.rank > 3 && piece.kills >= 5) || (piece.rank === 3 && this.kill >= 3) || (piece.rank === 1 && this.kill >= 1));
+	}
+
+	useAbility() {
+		let last = this.state.lastClicked;
+		let newPieces = this.state.pieces.slice();
+		let newSquares = this.state.squares.slice();
+		if(last != null){
+			if(this.checkAbility()){
+				if((newSquares[last].pieceid.isBlue === 1 && this.state.blueTurn) || (newSquares[last].pieceid.isBlue === 0 && !this.state.blueTurn)){
+					console.log("ABILITY USED");
+				}
+			}	
+		}
+		
+	}
+
 	handleClick(i,j) {
 		if(this.state.isSetup) {
-			if(this.state.squares[10*i + j].hasPiece === false){
-				if(this.state.isListening){
-					this.setupAddPiece(i, j);
-				}
-			}
+			//uncomment this later
+			// if(this.state.squares[10*i + j].hasPiece === false){
+			// 	if(this.state.isListening){
+			// 		this.setupAddPiece(i, j);
+			// 	}
+			// }
+			this.testSetup()
 		}else if(this.state.isGameOn){
 			if(!this.state.isListening) {
 				if((this.state.blueTurn && this.state.squares[10*i+j].pieceid.isBlue === 1) ||  (!this.state.blueTurn && this.state.squares[10*i+j].pieceid.isBlue === 0)){
@@ -417,7 +455,7 @@ class Board extends React.Component {
 				return;
 			} else {
 				this.secondClick(i, j);
-				if(10*i + j === this.state.lastClicked){
+				if(10*i + j === this.state.lastClicked || !this.state.squares[10*i + j].isPurple || !this.state.squares.isHighlighted){
 					var blt = this.state.blueTurn;
 					this.setState({
 						blueTurn: !blt,
@@ -464,6 +502,9 @@ class Board extends React.Component {
 		return (
 			<div>
 				<div className="table">
+					{this.renderPanelRow(3)}
+					{this.renderPanelRow(2)}
+
 					{this.renderRow(0)}
 					{this.renderRow(1)}
 					{this.renderRow(2)}
@@ -478,10 +519,10 @@ class Board extends React.Component {
 					{this.renderRow(11)}
 				{/* </div>
 				<div className="panel table"> */}
+					
 					{this.renderPanelRow(0)}
 					{this.renderPanelRow(1)}
-					{this.renderPanelRow(2)}
-					{this.renderPanelRow(3)}
+					<button className="ability-button" onClick={() => this.useAbility()}>Use Ability</button>					
 				</div>
 			</div>
 			);
@@ -579,6 +620,7 @@ class Piece {
 		this.rank = rank;
 		this.isAlive = true;
 		this.isMovable = isMovable;
+		this.kills = 0;
 	}
 }
 
