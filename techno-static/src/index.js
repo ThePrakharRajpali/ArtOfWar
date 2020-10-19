@@ -45,10 +45,12 @@ class Board extends React.Component {
 		else if(square.pieceid.isBlue) className="squareblueoccupied";
 		else className="squareredoccupied";
 
+		let id = "" + i + "_" + j;
 		return(
 			<Square
 				value={disp}
-				className={className}
+				className={className + " " +id} 
+		 
 				onClick={()=>this.handleClick(i,j)}
 			/>
 			);
