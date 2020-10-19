@@ -26,7 +26,8 @@ class Board extends React.Component {
 			initialBluePiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
 			pieceToAdd: null,
 			blueTurn: false,
-			abilityOn: null,
+			redScore: 0,
+			blueScore: 0,
 		};
 	}
 
@@ -49,7 +50,7 @@ class Board extends React.Component {
 		return(
 			<Square
 				value={disp}
-				className={className + " " +id} 
+				className={className + " " + id} 
 		 
 				onClick={()=>this.handleClick(i,j)}
 			/>
@@ -259,6 +260,9 @@ class Board extends React.Component {
 		let lastSquare = this.state.squares[this.state.lastClicked];
 		let nextSquare = this.state.squares[10*i+j];
 
+		let redScore = this.state.redScore;
+		let blueScore = this.state.blueScore;
+
 		if(nextSquare.isHighlighted) {
 			newSquares[10*i + j].pieceid = this.state.squares[this.state.lastClicked].pieceid;
 			newSquares[this.state.lastClicked].pieceid = null;
@@ -273,7 +277,7 @@ class Board extends React.Component {
 
 			if(prevRank === 1 && nextRank !== -1){
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
-				newPieces[nextSquare.pieceid.isBlue][newSquares.pieceid.index].lastPos = newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos;
+
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
 				
 				newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
@@ -281,11 +285,15 @@ class Board extends React.Component {
 				newSquares[10*i+j].hasPiece = true;
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[this.state.lastClicked].hasPiece = false;
-				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].kill += 1;
+
+				if(newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isBlue){
+					blueScore += nextRank;
+				} else {
+					redScore += nextRank;
+				}
 			} else if(nextRank !== -1 || prevRank === 3){
 				if(prevRank === nextRank) {
 					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
-					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].lastPos = newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos;
 					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
 
 					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
@@ -299,17 +307,23 @@ class Board extends React.Component {
 					newSquares[10*i+j].hasPiece = false;
 
 				} else if(prevRank < nextRank) {
+					let lastPieceId = lastSquare.pieceid;
 					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isAlive = false;
-					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].lastPos = newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos;
 					newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].pos = null;
 
 					newSquares[this.state.lastClicked].pieceid = null;
 					newSquares[this.state.lastClicked].hasPiece = false;
 
-					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].kill += 1;
+					if(!newPieces[lastPieceId.isBlue][lastPieceId.index].isBlue){
+						blueScore += prevRank;
+					} else {
+						redScore += prevRank;
+					}
 				} else {
+
+					let lastPieceId = lastSquare.pieceid;
+					let nextPieceId = nextSquare.pieceid;
 					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
-					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].lastPos = newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos;
 					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
 					
 					newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
@@ -317,7 +331,32 @@ class Board extends React.Component {
 					newSquares[10*i+j].hasPiece = true;
 					newSquares[this.state.lastClicked].pieceid = null;
 					newSquares[this.state.lastClicked].hasPiece = false;
-					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].kill += 1;
+
+					if(nextRank == 1){
+						if(newPieces[lastPieceId.isBlue][lastPieceId.index].isBlue){
+							blueScore += prevRank;
+						} else {
+							redScore += prevRank;
+						}
+					} else if (nextRank === -1){
+						if(newPieces[lastPieceId.isBlue][lastPieceId.index].isBlue){
+							blueScore += 5;
+						} else {
+							redScore += 5;
+						}
+					} else if( nextRank === 0){
+						if(newPieces[lastPieceId.isBlue][lastPieceId.index].isBlue){
+							blueScore += 180;
+						} else {
+							redScore += 180;
+						}
+					} else {
+						if(newPieces[lastPieceId.isBlue][lastPieceId.index].isBlue){
+							blueScore += nextRank;
+						} else {
+							redScore += nextRank;
+						}
+					}
 				}
 			} else if(prevRank !== 3){ //TODO Bomb.
 				let orig = 10*i+j;
@@ -329,12 +368,18 @@ class Board extends React.Component {
 						if(co_od>=0 && co_od<=119  && isNear(orig, co_od)) {
 							if(!newSquares[co_od].isLake && newSquares[co_od].hasPiece) {
 								if(newSquares[orig].pieceid.isBlue !== newSquares[co_od].pieceid.isBlue) {
-									newPieces[newSquares[co_od].pieceid.isBlue][newSquares[co_od].pieceid.index].lastPos = newPieces[newSquares[co_od].pieceid.isBlue][newSquares[co_od].pieceid.index].pos;
+									var nextRankBlast = newPieces[newSquares[co_od].pieceid.isBlue][newSquares[co_od].pieceid.index].rank;
 									newPieces[newSquares[co_od].pieceid.isBlue][newSquares[co_od].pieceid.index].pos = null;
 									newPieces[newSquares[co_od].pieceid.isBlue][newSquares[co_od].pieceid.index].isAlive = false;
 
 									newSquares[co_od].hasPiece = false;
 									newSquares[co_od].pieceid = null;
+
+									if(!newPieces[newSquares[orig].pieceid.isBlue][newSquares[orig].pieceid.index].isBlue){
+										blueScore += nextRankBlast
+									} else {
+										redScore += nextRankBlast
+									}
 								}				
 							}
 						}
@@ -363,6 +408,8 @@ class Board extends React.Component {
 			lastClicked: null,
 			isGameOn: !this.flagCaptured(),
 			blueTurn: !blt,
+			redScore: redScore,
+			blueScore: blueScore,
 		});
 		return;
 	}
@@ -377,100 +424,6 @@ class Board extends React.Component {
 			// 	}
 			// }
 			this.testSetup()
-		} else if(this.state.abilityOn !== null){
-			let last = this.state.lastClicked;
-			let clickedPiece = this.state.pieces[this.state.squares[last].pieceid.isBlue][this.state.squares[last].pieceid.index];
-			let rank = clickedPiece.rank;
-
-			let newSquares = this.state.squares.slice();
-			let newPieces = this.state.pieces.slice();
-	
-			if(rank === 1){ // spy (teleport)
-				if(!newSquares[10*i + j].hasPiece){
-					newPieces[newSquares[last].pieceid.isBlue][newSquares[last].pieceid.index].pos = 10*i + j;
-					newPieces[newSquares[last].pieceid.isBlue][newSquares[last].pieceid.index].kill = 0;
-
-					newSquares[10*i + j].hasPiece = true;
-					newSquares[10*i + j].pieceid = newSquares[last].pieceid;
-
-					newSquares[last].hasPiece = false;
-					newSquares[last].pieceid = null;
-				}
-			} else if(rank === 2) { //Scout (dash)
-				var numKills = 0;
-				var currPos = last;
-				var nextPos = (clickedPiece.isBlue) ? currPos + 10: currPos - 10;
-				while(numKills <= 2 && (!newSquares[nextPos].isLake) && nextPos < 120 && nextPos>0){
-					currPos = nextPos;
-					nextPos = (clickedPiece.isBlue) ? currPos + 10: currPos - 10;
-
-					if(newSquares[currPos].hasPiece && newSquares[currPos].pieceid.isBlue !== newSquares[last].pieceid.isBlue){
-						newPieces[newSquares[currPos].pieceid.isBlue][newSquares[currPos].pieceid.index].lastPos = newPieces[newSquares[currPos].pieceid.isBlue][newSquares[currPos].pieceid.index].pos;
-						newPieces[newSquares[currPos].pieceid.isBlue][newSquares[currPos].pieceid.index].pos = null;
-						newPieces[newSquares[currPos].pieceid.isBlue][newSquares[currPos].pieceid.index] = null;
-						newSquares[currPos].pieceid = null;
-						newSquares[currPos].hasPiece = false;
-						numKills += 1;
-					} else if(newSquares[currPos].hasPiece && newSquares[currPos].pieceid.isBlue === newSquares[last].pieceid.isBlue){
-						currPos = nextPos;
-						nextPos = (clickedPiece.isBlue) ? currPos + 10: currPos - 10;
-					}
-				}
-
-				newPieces[newSquares[last].pieceid.isBlue][newSquares[last].pieceid.index].isAlive = false;
-				newPieces[newSquares[last].pieceid.isBlue][newSquares[last].pieceid.index].lastPos = last;
-				newPieces[newSquares[last].pieceid.isBlue][newSquares[last].pieceid.index].pos = null;
-				newSquares[last].hasPiece = false;
-				newSquares[last].pieceid = null;
-
-			} else if(rank === 3) { // Miner 
-				//show
-			} else if(rank === 4) { // Sergeant (direct kill)
-				if(newSquares[10*i + j].hasPiece){
-					newPieces[newSquares[10*i + j].pieceid.isBlue][newSquares[10*i + j].pieceid.index].lastPos = 10*i + j;
-					newPieces[newSquares[10*i + j].pieceid.isBlue][newSquares[10*i + j].pieceid.index].pos = null;
-					newPieces[newSquares[10*i + j].pieceid.isBlue][newSquares[10*i + j].pieceid.index].isAlive = false;
-					newSquares[10*i + j].hasPiece = false;
-					newSquares[10*i + j].pieceid = null;
-				}
-				
-			} else if(rank === 5) { // Lietenant
-				//show
-			} else if(rank === 6) { // captain (freeze one piece)
-				if(newSquares[10*i + j].hasPiece && newSquares[10*i + j].pieceid.isBlue !== newSquares[last].pieceid.isBlue){
-					newPieces[ newSquares[10*i + j].pieceid].isMovable = false;
-				}
-			} else if(rank === 7) { // Major (NOT DECIDED)
-
-			} else if(rank === 8) { // Colonel (Bomb to mortar)
-				
-			} else if(rank === 9) { // Genaral (revive)
-				if(!newSquares[10*i+j].hasPiece){
-					for(var k=39; k>=0; k++){
-						if(10*i + j === newPieces[newSquares[last].pieceid.isBlue][k].lastPos){
-							newPieces[newSquares[last].pieceid.isBlue][k].lastPos = null;
-							newPieces[newSquares[last].pieceid.isBlue][k].pos = 10*i + j;
-							newPieces[newSquares[last].pieceid.isBlue][k].isAlive = true;
-
-							newSquares[10*i + j].hasPiece = true;
-							newSquares[10*i + j].pieceid = {
-								isBlue: newSquares[last].pieceid.isBlue,
-								index: k,
-							}
-						}
-					}
-				}
-			} else if(rank === 10) { // Marshal
-				// show
-			}
-
-			this.setState({
-				squares: newSquares,
-				pieces: newPieces,
-				last: null,
-				abilityOn: false,
-				isListening: false,
-			})
 		} else if(this.state.isGameOn){
 			var blt = this.state.blueTurn;
 			if(!this.state.isListening) {
@@ -515,19 +468,19 @@ class Board extends React.Component {
 		}
 	}
 
-	useAbility(){
-		var last = this.state.lastClicked;
+	// useAbility(){
+	// 	var last = this.state.lastClicked;
 		
-		if(this.state.isListening){
-			var clickedPiece = this.state.pieces[this.state.squares[last].pieceid.isBlue][this.state.squares[last].pieceid.index];
+	// 	if(this.state.isListening){
+	// 		var clickedPiece = this.state.pieces[this.state.squares[last].pieceid.isBlue][this.state.squares[last].pieceid.index];
 
-			if(this.checkAbility()){
-				this.setState({
-					abilityOn: clickedPiece,
-				})
-			}
-		}
-	}
+	// 		if(this.checkAbility()){
+	// 			this.setState({
+	// 				abilityOn: clickedPiece,
+	// 			})
+	// 		}
+	// 	}
+	// }
 
 	checkAbility(){
 		var newPieces = this.state.pieces.slice();
@@ -543,6 +496,7 @@ class Board extends React.Component {
 	render() {
 		return (
 			<div>
+				<h3>{this.state.blueScore}</h3>
 				<div className="table">
 					{this.renderPanelRow(3)}
 					{this.renderPanelRow(2)}
@@ -559,12 +513,11 @@ class Board extends React.Component {
 					{this.renderRow(9)}
 					{this.renderRow(10)}
 					{this.renderRow(11)}
-				{/* </div>
-				<div className="panel table"> */}
-					<button onClick={() => this.useAbility()}>Use ability</button>
+				
 					{this.renderPanelRow(0)}
 					{this.renderPanelRow(1)}
 				</div>
+				<h3>{this.state.redScore}</h3>
 			</div>
 			);
 	}
@@ -665,9 +618,17 @@ class Piece {
 		this.rank = rank;
 		this.isAlive = true;
 		this.isMovable = isMovable;
-		this.kill = 0;
-		this.lastPos = null;
+		// this.kill = 0;
+		// this.lastPos = null;
 	}
 }
 
+
+
 ReactDOM.render(<Board/>, document.getElementById("root"));
+
+
+// TODO: Score,
+// 
+
+
