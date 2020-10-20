@@ -167,15 +167,19 @@ class Board extends React.Component {
 
 		if(newPieces[pieceColor][pieceIndex].pos === null){
 			if(pieceColor === 1 && 10*i + j <= 39){
-				newSquares[10*i + j].pieceid.isBlue = 1;
-				newSquares[10*i + j].pieceid.index = pieceIndex;
+				newSquares[10*i + j].pieceid = {
+					isBlue: 1,
+					index : pieceIndex,
+				}
 				newSquares[10*i + j].hasPiece = true;
 				newPieces[pieceColor][pieceIndex].pos = 10*i + j;
 				blueCount++;
 				bluePieces[newPieces[pieceColor][pieceIndex].rank + 1] -= 1;
 			} else if(pieceColor === 0 && 10*i + j >= 80) {
-				newSquares[10*i + j].pieceid.isBlue = 0;
-				newSquares[10*i + j].pieceid.index = pieceIndex;
+				newSquares[10*i + j].pieceid = {
+					isBlue: 0,
+					index : pieceIndex,
+				}
 				newSquares[10*i + j].hasPiece = true;
 				newPieces[pieceColor][pieceIndex].pos = 10*i + j;
 				redCount++;
@@ -460,7 +464,7 @@ class Board extends React.Component {
 									newSquares[co_od].hasPiece = false;
 									newSquares[co_od].pieceid = null;
 
-									if(!newPieces[newSquares[orig].pieceid.isBlue][newSquares[orig].pieceid.index].isBlue){
+									if(newPieces[newSquares[orig].pieceid.isBlue][newSquares[orig].pieceid.index].isBlue){
 										blueScore += nextRankBlast
 									} else {
 										redScore += nextRankBlast
@@ -503,6 +507,7 @@ class Board extends React.Component {
 
 	handleClick(i,j) {
 		if(this.state.isSetup) {
+
 			if(this.state.pieceToAdd !== null){
 				if(this.state.squares[10*i+j].hasPiece === false){
 					this.setupAddPiece(i,j);
@@ -517,6 +522,7 @@ class Board extends React.Component {
 			// 		this.setupAddPiece(i, j);
 			// 	}
 			// }
+
 			// this.testSetup()
 		} else if(this.state.isGameOn){
 			var blt = this.state.blueTurn;
