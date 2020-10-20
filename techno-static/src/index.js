@@ -418,12 +418,12 @@ class Board extends React.Component {
 
 	handleClick(i,j) {
 		if(this.state.isSetup) {
-			// if(this.state.squares[10*i + j].hasPiece === false){
-			// 	if(this.state.isListening){
-			// 		this.setupAddPiece(i, j);
-			// 	}
-			// }
-			this.testSetup()
+			if(this.state.squares[10*i + j].hasPiece === false){
+				if(this.state.isListening){
+					this.setupAddPiece(i, j);
+				}
+			}
+			// this.testSetup()
 		} else if(this.state.isGameOn){
 			var blt = this.state.blueTurn;
 			if(!this.state.isListening) {
