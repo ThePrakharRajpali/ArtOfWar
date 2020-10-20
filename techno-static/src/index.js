@@ -104,7 +104,7 @@ class Board extends React.Component {
 
 	renderPanelRow(i){
 		return (
-			<div className="board-row panel-row">
+			<div className="board-rowPanel-row">
 				{this.renderPanelSquare(i,0)}
 				{this.renderPanelSquare(i,1)}
 				{this.renderPanelSquare(i,2)}
@@ -539,11 +539,16 @@ class Board extends React.Component {
 	
 	render() {
 		return (
-			<div>
-				<h3>{this.state.blueScore}</h3>
-				<div className="table">
+			<div className='gamePage'>
+				<div className='blueScoreDisplay'>
+					<h3>{this.state.blueScore}</h3>
+				</div>
+				<div className='bluePanel'>
 					{this.renderPanelRow(3)}
 					{this.renderPanelRow(2)}
+				</div>
+				<div className="table">
+					
 
 					{this.renderRow(0)}
 					{this.renderRow(1)}
@@ -558,10 +563,16 @@ class Board extends React.Component {
 					{this.renderRow(10)}
 					{this.renderRow(11)}
 				
+					
+				</div>
+				<div className='redPanel'>
 					{this.renderPanelRow(0)}
 					{this.renderPanelRow(1)}
 				</div>
-				<h3>{this.state.redScore}</h3>
+				<div className='redScoreDisplay'>
+					<h3>{this.state.redScore}</h3>
+				</div>
+				
 			</div>
 			);
 	}
@@ -665,6 +676,25 @@ class Piece {
 	}
 }
 
+class Heading extends React.Component {
+	render() {
+		return (
+			<div>
+				<h1>Ultimate Stratego</h1>
+			</div>
+		)
+	}
+}
+
+class Techno extends React.Component {
+	render() {
+		return (
+			<div>
+				<h1>Techno logo</h1>
+			</div>
+		)
+	}
+}
 
 
 ReactDOM.render(<Board/>, document.getElementById("root"));
