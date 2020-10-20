@@ -33,7 +33,6 @@ class Board extends React.Component {
 	}
 
 	renderSquare(i, j) {
-
 		let square = this.state.squares[10*i+j];
 		let pieces = this.state.pieces;
 		let disp = null;
@@ -77,13 +76,12 @@ class Board extends React.Component {
 		return(
 			<Square
 				className={className + " " + id} 
-		 
 				onClick={()=>this.handleClick(i,j)}
 			/>
 			);
 	}
-
-	renderRow(i) {
+	
+		renderRow(i) {
 		return(
 			<div className="board-row">
 				{this.renderSquare(i,0)}
@@ -105,7 +103,7 @@ class Board extends React.Component {
 		let className;
 		if(i%2 === 0){
 			if(i===0){
-	     if(p===1) className="squareredoccupied spyR";
+	          if(p===1) className="squareredoccupied spyR";
 		 else if(p===2) className="squareredoccupied scoutR";
 		 else if(p===3) className="squareredoccupied minerR";
          else if(p===4) className="squareredoccupied sergeantR";
@@ -175,7 +173,7 @@ class Board extends React.Component {
 		);
 	}
 
-	handlePanelClick(i, j){
+handlePanelClick(i, j){
 		if(this.state.isSetup){
 			let maxPieces = [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1];
 		
@@ -726,5 +724,4 @@ ReactDOM.render(<Board/>, document.getElementById("root"));
 
 // TODO: Score,
 // 
-
 
