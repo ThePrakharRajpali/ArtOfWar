@@ -427,7 +427,7 @@ handlePanelClick(i, j){
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[this.state.lastClicked].hasPiece = false;
 
-				if(newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isBlue){
+				if(newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isBlue){
 					blueScore += nextRank;
 				} else {
 					redScore += nextRank;
@@ -560,22 +560,17 @@ handlePanelClick(i, j){
 	handleClick(i,j) {
 		if(this.state.isSetup) {
 
-			if(this.state.pieceToAdd !== null){
-				if(this.state.squares[10*i+j].hasPiece === false){
-					this.setupAddPiece(i,j);
-				}
-			}else if(!this.state.isListening){
-				this.setupFirstClick(i,j);
-			}else{
-				this.setupSecondClick(i,j);
-			}
-			// if(this.state.squares[10*i + j].hasPiece === false){
-			// 	if(this.state.isListening){
-			// 		this.setupAddPiece(i, j);
+			// if(this.state.pieceToAdd !== null){
+			// 	if(this.state.squares[10*i+j].hasPiece === false){
+			// 		this.setupAddPiece(i,j);
 			// 	}
+			// }else if(!this.state.isListening){
+			// 	this.setupFirstClick(i,j);
+			// }else{
+			// 	this.setupSecondClick(i,j);
 			// }
 
-			// this.testSetup()
+			this.testSetup()
 		} else if(this.state.isGameOn){
 			var blt = this.state.blueTurn;
 			if(!this.state.isListening) {
