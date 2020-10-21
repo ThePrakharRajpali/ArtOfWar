@@ -33,7 +33,6 @@ class Board extends React.Component {
 	}
 
 	renderSquare(i, j) {
-
 		let square = this.state.squares[10*i+j];
 		let pieces = this.state.pieces;
 		let disp = null;
@@ -44,21 +43,45 @@ class Board extends React.Component {
 		else if(square.isPurple) className="squarehighlightattack";
 		else if(square.isHighlighted) className="squarehighlighted";
 		else if(square.hasPiece===false) className="squarefree";
-		else if(square.pieceid.isBlue) className="squareblueoccupied";
-		else className="squareredoccupied";
+		else if(square.pieceid.isBlue) {
+	          if(disp===1) className="squareblueoccupied spyB";
+		 else if(disp===2) className="squareblueoccupied scoutB";
+		 else if(disp===3) className="squareblueoccupied minerB";
+         else if(disp===4) className="squareblueoccupied sergeantB";
+         else if(disp===5) className="squareblueoccupied lieutenantB";
+         else if(disp===6) className="squareblueoccupied captainB";
+         else if(disp===7) className="squareblueoccupied majorB";
+         else if(disp===8) className="squareblueoccupied colonelB"; 
+         else if(disp===9) className="squareblueoccupied generalB";
+         else if(disp===10) className="squareblueoccupied marshalB";
+         else if(disp===0) className="squareblueoccupied flagB";
+         else className="squareblueoccupied bombB";
+		}
+		else {
+			if(disp===1) className="squareredoccupied spyR";
+		 else if(disp===2) className="squareredoccupied scoutR";
+		 else if(disp===3) className="squareredoccupied minerR";
+         else if(disp===4) className="squareredoccupied sergeantR";
+         else if(disp===5) className="squareredoccupied lieutenantR";
+         else if(disp===6) className="squareredoccupied captainR";
+         else if(disp===7) className="squareredoccupied majorR";
+         else if(disp===8) className="squareredoccupied colonelR";
+         else if(disp===9) className="squareredoccupied generalR";
+         else if(disp===10) className="squareredoccupied marshalR";
+         else if(disp===0) className="squareredoccupied flagR";
+         else className="squareredoccupied bombR";
+		}
 
-		let id = "" + i + "_" + j;
+		let id = "b" + (i+1) + "_" + (j+1);
 		return(
 			<Square
-				value={disp}
 				className={className + " " + id} 
-		 
 				onClick={()=>this.handleClick(i,j)}
 			/>
 			);
 	}
-
-	renderRow(i) {
+	
+		renderRow(i) {
 		return(
 			<div className="board-row">
 				{this.renderSquare(i,0)}
@@ -76,12 +99,41 @@ class Board extends React.Component {
 	}
 
 	renderPanelSquare(i, j){
+		let p=j-1;
+		let className;
 		if(i%2 === 0){
-			let disp = (i===0) ? "squareredoccupied" : "squareblueoccupied";
+			if(i===0){
+	          if(p===1) className="squareredoccupied spyR";
+		 else if(p===2) className="squareredoccupied scoutR";
+		 else if(p===3) className="squareredoccupied minerR";
+         else if(p===4) className="squareredoccupied sergeantR";
+         else if(p===5) className="squareredoccupied lieutenantR";
+         else if(p===6) className="squareredoccupied captainR";
+         else if(p===7) className="squareredoccupied majorR";
+         else if(p===8) className="squareredoccupied colonelR";
+         else if(p===9) className="squareredoccupied generalR";
+         else if(p===10) className="squareredoccupied marshalR";
+         else if(p===0) className="squareredoccupied flagR";
+         else className="squareredoccupied bombR";
+					} 
+
+		else{ 
+		 if(p===1) className="squareblueoccupied spyB";
+		 else if(p===2) className="squareblueoccupied scoutB";
+		 else if(p===3) className="squareblueoccupied minerB";
+         else if(p===4) className="squareblueoccupied sergeantB";
+         else if(p===5) className="squareblueoccupied lieutenantB";
+         else if(p===6) className="squareblueoccupied captainB";
+         else if(p===7) className="squareblueoccupied majorB";
+         else if(p===8) className="squareblueoccupied colonelB"; 
+         else if(p===9) className="squareblueoccupied generalB";
+         else if(p===10) className="squareblueoccupied marshalB";
+         else if(p===0) className="squareblueoccupied flagB";
+         else className="squareblueoccupied bombB";
+					} 
 			return (
 				<Square
-					value={j-1}
-					className={disp}
+					className={className}
 					onClick={() => this.handlePanelClick(i, j)}
 				/>
 			);
@@ -121,7 +173,7 @@ class Board extends React.Component {
 		);
 	}
 
-	handlePanelClick(i, j){
+handlePanelClick(i, j){
 		if(this.state.isSetup){
 			let maxPieces = [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1];
 		
@@ -672,5 +724,4 @@ ReactDOM.render(<Board/>, document.getElementById("root"));
 
 // TODO: Score,
 // 
-
 
