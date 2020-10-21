@@ -540,14 +540,19 @@ class Board extends React.Component {
 	render() {
 		return (
 			<div className='gamePage'>
-				<div className='blueScoreDisplay'>
+				<span className='heading'>
+					<span className='gameName'>Ultimate Stratego</span>
+					<span className='technoLogo'>Techno logo</span>
+				</span>
+				
+				<span className='blueScoreDisplay'>
 					<h3>{this.state.blueScore}</h3>
-				</div>
-				<div className='bluePanel'>
+				</span>
+				<span className='bluePanel'>
 					{this.renderPanelRow(3)}
 					{this.renderPanelRow(2)}
-				</div>
-				<div className="table">
+				</span>
+				<span className='table'>
 					
 
 					{this.renderRow(0)}
@@ -564,14 +569,14 @@ class Board extends React.Component {
 					{this.renderRow(11)}
 				
 					
-				</div>
-				<div className='redPanel'>
+				</span>
+				<span className='redPanel'>
 					{this.renderPanelRow(0)}
 					{this.renderPanelRow(1)}
-				</div>
-				<div className='redScoreDisplay'>
+				</span>
+				<span className='redScoreDisplay'>
 					<h3>{this.state.redScore}</h3>
-				</div>
+				</span>
 				
 			</div>
 			);
