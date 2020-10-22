@@ -81,10 +81,28 @@ class Board extends React.Component {
 			});
 		});
 
-		// join(roomid) {
-		// 	console.log("joining");
-		// 	this.socket.emit("join", roomid);
-		// }
+		this.socket.on("setupDone", (data) =>{
+			this.setState({
+				squares: data.squares,
+				pieces: data.pieces,
+				isGameOn: data.isGameOn,
+				blueScore: data.blueScore,
+				redScore: data.redScore,
+				blueTurn: data.blueTurn,
+				isSetup: data.isSetup,
+			});
+		});
+
+		this.socket.on("newPieceAddedInfo", (data) => {
+			this.setState({
+				squares: data.squares,
+				pieces: data.pieces,
+				pieceToAdd: null,
+				pieceToMove: null,
+				lastClicked: null,
+				isListening: false,
+			});
+		});
 	}
 
 
@@ -307,13 +325,19 @@ class Board extends React.Component {
 				redPieces[newPieces[pieceColor][pieceIndex].rank + 1] -= 1;
 			}
 
+			let toSend = {
+				squares: newSquares,
+				pieces: newPieces,
+			};
+
+			this.socket.emit("newPieceAdd", toSend);
+
 			this.setState({
 				squares: newSquares,
 				pieces: newPieces,
 				numRed: redCount,
 				numBlue: blueCount,
 				isListening: false,
-				isSetup: !(blueCount>=40 && redCount >= 40),
 				initialBluePiece: bluePieces,
 				initialRedPiece: redPieces,
 				pieceToAdd: null,
@@ -325,12 +349,14 @@ class Board extends React.Component {
 		if(this.state.isListening || !this.state.squares[10*i+j].hasPiece){
 			return;
 		}else{
-			let newPiece = this.state.squares[10*i+j].pieceid;
-			this.setState({
-				pieceToMove: newPiece,
-				isListening: true,
-				lastClicked: 10*i+j,
-			});
+			if(this.state.isPlayerBlue == this.state.squares[10*i+j].pieceid.isBlue){
+				let newPiece = this.state.squares[10*i+j].pieceid;
+				this.setState({
+					pieceToMove: newPiece,
+					isListening: true,
+					lastClicked: 10*i+j,
+				});
+			}
 		}
 	}
 
@@ -355,6 +381,13 @@ class Board extends React.Component {
 				newSquares[this.state.lastClicked].hasPiece = false;
 				newSquares[this.state.lastClicked].pieceid = null;
 			}
+
+			let toSend = {
+				squares: newSquares,
+				pieces: newPieces,
+			};
+
+			this.socket.emit("newPieceAdd", toSend);
 
 			this.setState({
 				squares: newSquares,
@@ -635,24 +668,22 @@ class Board extends React.Component {
 		return;
 	}
 
-	
-
 	handleClick(i,j) {
 		if(this.state.isSetup) {
 
-			// if(this.state.pieceToAdd !== null){
-			// 	if(this.state.squares[10*i+j].hasPiece === false){
-			// 		this.setupAddPiece(i,j);
-			// 	}
-			// }else if(!this.state.isListening){
-			// 	this.setupFirstClick(i,j);
-			// }else{
-			// 	this.setupSecondClick(i,j);
-			// }
+			if(this.state.pieceToAdd !== null){
+				if(this.state.squares[10*i+j].hasPiece === false){
+					this.setupAddPiece(i,j);
+				}
+			}else if(!this.state.isListening){
+				this.setupFirstClick(i,j);
+			}else{
+				this.setupSecondClick(i,j);
+			}
 
-			this.testSetup()
-		} else if(this.state.isGameOn){
-			var blt = this.state.blueTurn;
+			// this.testSetup()
+		} else if(this.state.isGameOn && this.state.isPlayerBlue === this.state.blueTurn){
+			let blt = this.state.blueTurn;
 			if(!this.state.isListening) {
 				this.firstClick(i, j);
 				return;
@@ -667,10 +698,16 @@ class Board extends React.Component {
 	render() {
 
 		let Panel = null;
+		let readyButton = null;
 
 		if(this.state.isSetup){
 			if(this.state.isPlayerBlue) Panel = <div>{this.renderPanelRow(2)}{this.renderPanelRow(3)}</div>;
 			else Panel = <div>{this.renderPanelRow(0)}{this.renderPanelRow(1)}</div>;
+		}
+
+		if(this.state.isSetup){
+			if(this.state.isPlayerBlue) readyButton = <button onClick={()=>this.blueReadyButton()}>Ready</button>;
+			else readyButton = <button onClick={()=>this.redReadyButton()}>Ready</button>;
 		}
 
 		if(this.state.isPlayerBlue){
@@ -694,6 +731,7 @@ class Board extends React.Component {
 						{this.renderRow(0)}
 
 						{Panel}
+						{readyButton}
 					</div>
 					<h3>{this.state.blueScore}</h3>
 				</div>
@@ -718,12 +756,31 @@ class Board extends React.Component {
 						{this.renderRow(11)}
 					
 						{Panel}
+						{readyButton}
 					</div>
 					<h3>{this.state.redScore}</h3>
 				</div>
 				);
 		}
 
+	}
+
+	blueReadyButton() {
+		if(this.state.numBlue<40) alert('Place all pieces first.');
+		else {
+			this.socket.emit("blueReady",function(){
+				console.log("Blue is Ready");				
+			});
+
+			this.setState({clickMask:true});
+		}
+	}
+
+	redReadyButton() {
+		if(this.state.numRed<40) alert('Place all pieces first.');
+		else this.socket.emit("redReady",function(){
+			console.log("Red is ready");				
+		});
 	}
 }
 
