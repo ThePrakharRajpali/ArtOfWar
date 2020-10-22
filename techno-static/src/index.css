@@ -1,3 +1,13 @@
+.gamePage{
+  background-color: #8ebff0;
+  /* min-height: 90vh; */
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  justify-content: center;
+  /* position:relative; */
+}
+
 .board-row:after {
   clear: both;
   content: "";
@@ -677,13 +687,120 @@ background-size: cover;
 
 .table{
   background-color: #8ebff0;
-  min-height: 100vh;
+  min-height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  position:relative;
+  
+  z-index: 1;
   /*font-size: calc(10px + 2vmin);
   color: white;*/
+}
+
+
+.bluePanel{
+  position: relative;
+  top: -25000%;
+  justify-content: right;
+  background-color: #8ebff0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  left: 10%;
+  width: 540px;
+  height:90px;
+  margin-top: 24%;
+  margin-bottom: -26.7%;
+  /* margin-right: -150%; */
+  /* margin-right: 50%; */
+  padding: 2%;
+  transform:rotate(-90deg);
+  z-index:7;
+}
+.redPanel{
+  /* position: relative; */
+  /* top: -25000%; */
+  justify-content: right;
+  background-color: #8ebff0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* right: -20%;  */
+  width: 540px;
+  height:90px;
+  margin-top: -26.5%;
+  margin-bottom: 20%;
+  margin-right: -150%;
+  margin-left: 50%;
+  padding: 2%;
+  transform:rotate(-90deg);
+  z-index:7;
+}
+.blueScoreDisplay{
+  position: relative;
+  top: -25000%;
+  justify-content: right;
+  background-color: #8ebff0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  left: 15%;
+  width: 90px;
+  height:90px;
+  margin-top: 24%;
+  margin-bottom: -32.5%;
+  margin-right: -150%;
+  margin-right: 50%;
+  padding: 2%;
+  z-index:9;
+
+}
+
+.redScoreDisplay{
+  position: relative;
+  top: -25000%;
+  justify-content: right;
+  background-color: #8ebff0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  right: -25%;
+  width: 90px;
+  height:90px;
+  margin-top: -31.5%;
+  margin-bottom: 20%;
+  margin-right: -150%;
+  margin-left: 50%;
+  padding: 2%;
+  z-index:9;
+}
+
+.board-rowPanel-row .squareredoccupied,.board-rowPanel-row .squarefree, .board-rowPanel-row .squareblueoccupied {
+  transform:rotate(90deg);
+}
+
+.heading{
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position:relative;
+  margin-top: -33%;
+  margin-bottom:-45%;
+}
+.gameName{
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+  margin: 35%;
+  padding: 2%;
+  margin-right: 30.5%;
 }
 
 .bombB{
@@ -870,3 +987,4 @@ background-size: cover;
   margin: -1px;
   border-width: 0px 5px 5px 0px;
 }
+
