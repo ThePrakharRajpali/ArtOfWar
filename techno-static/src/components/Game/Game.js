@@ -4,7 +4,6 @@ import queryString from 'query-string';
 import io from 'socket.io-client';
 import '../../index.css';
 
-let socket;
 const ENDPOINT = 'localhost:5000';
 
 // const roomId = ({ location }) => {
@@ -54,31 +53,38 @@ class Board extends React.Component {
 			name:"",
 			room:"",
 		};
+		this.socket = io(ENDPOINT);
 	}
 
 	componentDidMount(){
-		//;
-		if(this.props.location!==undefined){
-			//const name = this.props.location.state.name;
-			const room = this.props.location.state.roomid;
-			socket = io(ENDPOINT);
+		//const name = this.props.location.state.name;
+		const room = this.props.location.state.roomid;
 
-			socket.emit('join',room);
+		this.socket.emit('join',room);
 
-			socket.emit('disconnect',function(){
-				console.log("bye bye!!");				
+		this.socket.emit('disconnect',function(){
+			console.log("bye bye!!");				
+		});
+
+		this.socket.on("roomid", ({ roomid, isPlayerBlue }) => {
+			this.setState({ isPlayerBlue: isPlayerBlue});	
+		});
+
+		this.socket.on("move", (data) => {
+			this.setState({
+				squares: data.squares,
+				pieces: data.pieces,
+				isGameOn: data.isGameOn,
+				blueScore: data.blueScore,
+				redScore: data.redScore,
+				blueTurn: data.blueTurn,
 			});
+		});
 
-			socket.on("roomid", ({ roomid, isPlayerBlue }) => {
-				this.setState({ isPlayerBlue: isPlayerBlue});	
-			});
-
-			// join(roomid) {
-			// 	console.log("joining");
-			// 	this.socket.emit("join", roomid);
-			// }
-
-		}
+		// join(roomid) {
+		// 	console.log("joining");
+		// 	this.socket.emit("join", roomid);
+		// }
 	}
 
 
@@ -605,6 +611,17 @@ class Board extends React.Component {
 
 		let blt = this.state.blueTurn;
 
+		let toSend = {
+			turn: !blt,
+			isGameOn: !this.flagCaptured(),
+			blueScore: blueScore,
+			redScore: redScore,
+			squares: newSquares,
+			pieces: newPieces,
+		};
+
+		this.socket.emit("moved", toSend);
+
 		this.setState({
 			squares: newSquares,
 			pieces: newPieces,
@@ -623,22 +640,17 @@ class Board extends React.Component {
 	handleClick(i,j) {
 		if(this.state.isSetup) {
 
-			if(this.state.pieceToAdd !== null){
-				if(this.state.squares[10*i+j].hasPiece === false){
-					this.setupAddPiece(i,j);
-				}
-			}else if(!this.state.isListening){
-				this.setupFirstClick(i,j);
-			}else{
-				this.setupSecondClick(i,j);
-			}
-			// if(this.state.squares[10*i + j].hasPiece === false){
-			// 	if(this.state.isListening){
-			// 		this.setupAddPiece(i, j);
+			// if(this.state.pieceToAdd !== null){
+			// 	if(this.state.squares[10*i+j].hasPiece === false){
+			// 		this.setupAddPiece(i,j);
 			// 	}
+			// }else if(!this.state.isListening){
+			// 	this.setupFirstClick(i,j);
+			// }else{
+			// 	this.setupSecondClick(i,j);
 			// }
 
-			// this.testSetup()
+			this.testSetup()
 		} else if(this.state.isGameOn){
 			var blt = this.state.blueTurn;
 			if(!this.state.isListening) {
