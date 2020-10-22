@@ -1,10 +1,55 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import '../../index.css';
 
-import App from './App';
+let socket;
+const ENDPOINT = 'localhost:5000';
 
-ReactDOM.render(<App />, document.querySelector('#root'));
+// const roomId = ({ location }) => {
+// 	const [name, setName] = useState('');
+// 	const [room, setRoom] = useState('');
+	
+// 	useEffect(()=>{
+// 		const { name,room }=queryString(location.search);
+// 		socket=io(ENDPOINT);
 
+// 		setName(name);
+// 		setRoom(room);
+
+// 		console.log(socket);
+// 	},[ENDPOINT,location.search])
+// }
+
+function Square(props) {
+	return (
+		<button className={props.className} onClick={props.onClick}>
+			{props.value}
+		</button>
+		);
+}
+
+class Board extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			squares: makearray(),
+			pieces: makepieces(),
+			isListening: false,
+			lastClicked: null,
+			isSetup: true,
+			numRed: 0,
+			numBlue: 0,
+			isGameOn: true,
+			initialRedPiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
+			initialBluePiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
+			pieceToAdd: null,
+			pieceToMove: null,
+			blueTurn: false,
+			redScore: 0,
+			blueScore: 0,
+		};
+	}
 
 	renderSquare(i, j) {
 
@@ -78,7 +123,7 @@ ReactDOM.render(<App />, document.querySelector('#root'));
 
 	renderPanelRow(i){
 		return (
-			<div className="board-rowPanel-row">
+			<div className="board-row panel-row">
 				{this.renderPanelSquare(i,0)}
 				{this.renderPanelSquare(i,1)}
 				{this.renderPanelSquare(i,2)}
@@ -513,21 +558,14 @@ ReactDOM.render(<App />, document.querySelector('#root'));
 	
 	render() {
 		return (
-			<div className='gamePage'>
-				<span className='heading'>
-					<span className='gameName'>Ultimate Stratego</span>
-					<span className='technoLogo'>Techno logo</span>
-				</span>
-				
-				<span className='blueScoreDisplay'>
-					<h3>{this.state.blueScore}</h3>
-				</span>
-				<span className='bluePanel'>
+			<div>
+				<h3>{this.state.blueScore}</h3>
+				<div>
+					{/* <h2>{name}</h2> */}
+				</div>
+				<div className="table">
 					{this.renderPanelRow(3)}
 					{this.renderPanelRow(2)}
-				</span>
-				<span className='table'>
-					
 
 					{this.renderRow(0)}
 					{this.renderRow(1)}
@@ -542,21 +580,14 @@ ReactDOM.render(<App />, document.querySelector('#root'));
 					{this.renderRow(10)}
 					{this.renderRow(11)}
 				
-					
-				</span>
-				<span className='redPanel'>
 					{this.renderPanelRow(0)}
 					{this.renderPanelRow(1)}
-				</span>
-				<span className='redScoreDisplay'>
-					<h3>{this.state.redScore}</h3>
-				</span>
-				
+				</div>
+				<h3>{this.state.redScore}</h3>
 			</div>
 			);
 	}
 }
-
 function makearray() {
 	let board = [];
 
@@ -655,31 +686,11 @@ class Piece {
 	}
 }
 
-class Heading extends React.Component {
-	render() {
-		return (
-			<div>
-				<h1>Ultimate Stratego</h1>
-			</div>
-		)
-	}
-}
-
-class Techno extends React.Component {
-	render() {
-		return (
-			<div>
-				<h1>Techno logo</h1>
-			</div>
-		)
-	}
-}
-
-
+export default Board;
 ReactDOM.render(<Board/>, document.getElementById("root"));
-
 
 
 // TODO: Score,
 // 
+
 

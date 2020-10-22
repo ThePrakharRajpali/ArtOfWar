@@ -1,10 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect} from 'react';
 import ReactDOM from 'react-dom';
+import queryString from 'query-string';
+import io from 'socket.io-client';
+import '../../index.css';
 
-import App from './App';
+let socket;
+const ENDPOINT = 'localhost:5000';
 
-ReactDOM.render(<App />, document.querySelector('#root'));
+// const roomId = ({ location }) => {
+// 	const [name, setName] = useState('');
+// 	const [room, setRoom] = useState('');
+	
+// 	useEffect(()=>{
+// 		const { name,room }=queryString(location.search);
+// 		socket=io(ENDPOINT);
 
+// 		setName(name);
+// 		setRoom(room);
+
+// 		console.log(socket);
+// 	},[ENDPOINT,location.search])
+// }
+
+function Square(props) {
+	return (
+		<button className={props.className} onClick={props.onClick}>
+			{props.value}
+		</button>
+		);
+}
+
+class Board extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			squares: makearray(),
+			pieces: makepieces(),
+			isListening: false,
+			isPlayerBlue: true,
+			lastClicked: null,
+			isSetup: true,
+			numRed: 0,
+			numBlue: 0,
+			isGameOn: true,
+			initialRedPiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
+			initialBluePiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
+			pieceToAdd: null,
+			pieceToMove: null,
+			blueTurn: false,
+			redScore: 0,
+			blueScore: 0,
+			name:"",
+			room:"",
+		};
+	}
 
 	renderSquare(i, j) {
 
@@ -15,48 +65,112 @@ ReactDOM.render(<App />, document.querySelector('#root'));
 
 		let className;
 		if(square.isLake) className="squarelake";
-		else if(square.isPurple) className="squarehighlightattack";
 		else if(square.isHighlighted) className="squarehighlighted";
 		else if(square.hasPiece===false) className="squarefree";
 		else if(square.pieceid.isBlue) className="squareblueoccupied";
 		else className="squareredoccupied";
 
-		let id = "" + i + "_" + j;
+		if(disp!==null && square.pieceid.isBlue!=this.state.isPlayerBlue) disp=null;
+
+		if(square.isPurple) className="squarehighlightattack";
+
+		let id;
+
+		if(this.state.isPlayerBlue)
+			id = "b" + (11-i+1) + "_" + (9-j+1);
+		else
+			id = "b" + (i+1) + "_" + (j+1);
+
 		return(
 			<Square
-				value={disp}
 				className={className + " " + id} 
-		 
 				onClick={()=>this.handleClick(i,j)}
+				value={disp}
 			/>
 			);
+
 	}
 
 	renderRow(i) {
-		return(
-			<div className="board-row">
-				{this.renderSquare(i,0)}
-				{this.renderSquare(i,1)}
-				{this.renderSquare(i,2)}
-				{this.renderSquare(i,3)}
-				{this.renderSquare(i,4)}
-				{this.renderSquare(i,5)}
-				{this.renderSquare(i,6)}
-				{this.renderSquare(i,7)}
-				{this.renderSquare(i,8)}
-				{this.renderSquare(i,9)}
-			</div>
-			);
+		
+		if(this.state.isPlayerBlue){
+			return(
+				<div className="board-row">
+					{this.renderSquare(i,9)}
+					{this.renderSquare(i,8)}
+					{this.renderSquare(i,7)}
+					{this.renderSquare(i,6)}
+					{this.renderSquare(i,5)}
+					{this.renderSquare(i,4)}
+					{this.renderSquare(i,3)}
+					{this.renderSquare(i,2)}
+					{this.renderSquare(i,1)}
+					{this.renderSquare(i,0)}
+				</div>
+				);
+		}else {
+			return(
+				<div className="board-row">
+					{this.renderSquare(i,0)}
+					{this.renderSquare(i,1)}
+					{this.renderSquare(i,2)}
+					{this.renderSquare(i,3)}
+					{this.renderSquare(i,4)}
+					{this.renderSquare(i,5)}
+					{this.renderSquare(i,6)}
+					{this.renderSquare(i,7)}
+					{this.renderSquare(i,8)}
+					{this.renderSquare(i,9)}
+				</div>
+				);
+		}
+
 	}
 
 	renderPanelSquare(i, j){
+		
+		let disp = null;
+		let p=j-1;
+		let className;
 		if(i%2 === 0){
-			let disp = (i===0) ? "squareredoccupied" : "squareblueoccupied";
+			if(i===0){
+	          if(p===1) className="squareredoccupied spyR";
+		 else if(p===2) className="squareredoccupied scoutR";
+		 else if(p===3) className="squareredoccupied minerR";
+         else if(p===4) className="squareredoccupied sergeantR";
+         else if(p===5) className="squareredoccupied lieutenantR";
+         else if(p===6) className="squareredoccupied captainR";
+         else if(p===7) className="squareredoccupied majorR";
+         else if(p===8) className="squareredoccupied colonelR";
+         else if(p===9) className="squareredoccupied generalR";
+         else if(p===10) className="squareredoccupied marshalR";
+         else if(p===0) className="squareredoccupied flagR";
+         else className="squareredoccupied bombR";
+         className="squareredoccupied";
+         disp=j-1;
+		} 
+
+		else{ 
+		 if(p===1) className="squareblueoccupied spyB";
+		 else if(p===2) className="squareblueoccupied scoutB";
+		 else if(p===3) className="squareblueoccupied minerB";
+         else if(p===4) className="squareblueoccupied sergeantB";
+         else if(p===5) className="squareblueoccupied lieutenantB";
+         else if(p===6) className="squareblueoccupied captainB";
+         else if(p===7) className="squareblueoccupied majorB";
+         else if(p===8) className="squareblueoccupied colonelB"; 
+         else if(p===9) className="squareblueoccupied generalB";
+         else if(p===10) className="squareblueoccupied marshalB";
+         else if(p===0) className="squareblueoccupied flagB";
+         else className="squareblueoccupied bombB";
+         className="squareblueoccupied";
+         disp=j-1;
+		} 
 			return (
 				<Square
-					value={j-1}
-					className={disp}
+					className={className}
 					onClick={() => this.handlePanelClick(i, j)}
+					value={disp}
 				/>
 			);
 		} else if(i===1){
@@ -74,11 +188,12 @@ ReactDOM.render(<App />, document.querySelector('#root'));
 				/>
 			);
 		}
+
 	}
 
 	renderPanelRow(i){
 		return (
-			<div className="board-rowPanel-row">
+			<div className="board-row panel-row">
 				{this.renderPanelSquare(i,0)}
 				{this.renderPanelSquare(i,1)}
 				{this.renderPanelSquare(i,2)}
@@ -512,50 +627,95 @@ ReactDOM.render(<App />, document.querySelector('#root'));
 	}
 	
 	render() {
-		return (
-			<div className='gamePage'>
-				<span className='heading'>
-					<span className='gameName'>Ultimate Stratego</span>
-					<span className='technoLogo'>Techno logo</span>
-				</span>
-				
-				<span className='blueScoreDisplay'>
-					<h3>{this.state.blueScore}</h3>
-				</span>
-				<span className='bluePanel'>
-					{this.renderPanelRow(3)}
-					{this.renderPanelRow(2)}
-				</span>
-				<span className='table'>
-					
 
-					{this.renderRow(0)}
-					{this.renderRow(1)}
-					{this.renderRow(2)}
-					{this.renderRow(3)}
-					{this.renderRow(4)}
-					{this.renderRow(5)}
-					{this.renderRow(6)}
-					{this.renderRow(7)}
-					{this.renderRow(8)}
-					{this.renderRow(9)}
-					{this.renderRow(10)}
-					{this.renderRow(11)}
-				
-					
-				</span>
-				<span className='redPanel'>
-					{this.renderPanelRow(0)}
-					{this.renderPanelRow(1)}
-				</span>
-				<span className='redScoreDisplay'>
+		let Panel = null;
+
+		if(this.state.isSetup){
+			if(this.state.isPlayerBlue) Panel = <div>{this.renderPanelRow(2)}{this.renderPanelRow(3)}</div>;
+			else Panel = <div>{this.renderPanelRow(0)}{this.renderPanelRow(1)}</div>;
+		}
+
+		if(this.state.isPlayerBlue){
+			return (
+				<div>
 					<h3>{this.state.redScore}</h3>
-				</span>
-				
-			</div>
-			);
+					<div className="table">
+						
+
+						{this.renderRow(11)}
+						{this.renderRow(10)}
+						{this.renderRow(9)}
+						{this.renderRow(8)}
+						{this.renderRow(7)}
+						{this.renderRow(6)}
+						{this.renderRow(5)}
+						{this.renderRow(4)}
+						{this.renderRow(3)}
+						{this.renderRow(2)}
+						{this.renderRow(1)}
+						{this.renderRow(0)}
+
+						{Panel}
+					</div>
+					<h3>{this.state.blueScore}</h3>
+				</div>
+				);
+		} else{
+			return (
+				<div>
+					<h3>{this.state.blueScore}</h3>
+					<div className="table">
+
+						{this.renderRow(0)}
+						{this.renderRow(1)}
+						{this.renderRow(2)}
+						{this.renderRow(3)}
+						{this.renderRow(4)}
+						{this.renderRow(5)}
+						{this.renderRow(6)}
+						{this.renderRow(7)}
+						{this.renderRow(8)}
+						{this.renderRow(9)}
+						{this.renderRow(10)}
+						{this.renderRow(11)}
+					
+						{Panel}
+					</div>
+					<h3>{this.state.redScore}</h3>
+				</div>
+				);
+		}
+
 	}
+
+	componentDidMount(){
+		//;
+		if(this.props.location!==undefined){
+			//const name = this.props.location.state.name;
+			const room = this.props.location.state.roomid;
+			socket = io(ENDPOINT);
+
+			socket.emit('join',room);
+
+			socket.emit('disconnect',function(){
+				console.log("bye bye!!");				
+			});
+
+			socket.on("roomid", ({ roomid, isPlayerBlue }) => {
+				this.setState({ isPlayerBlue: isPlayerBlue});	
+			});
+
+			// join(roomid) {
+			// 	console.log("joining");
+			// 	this.socket.emit("join", roomid);
+			// }
+
+		}
+	}
+
+
 }
+
 
 function makearray() {
 	let board = [];
@@ -655,31 +815,11 @@ class Piece {
 	}
 }
 
-class Heading extends React.Component {
-	render() {
-		return (
-			<div>
-				<h1>Ultimate Stratego</h1>
-			</div>
-		)
-	}
-}
-
-class Techno extends React.Component {
-	render() {
-		return (
-			<div>
-				<h1>Techno logo</h1>
-			</div>
-		)
-	}
-}
-
-
+export default Board;
 ReactDOM.render(<Board/>, document.getElementById("root"));
-
 
 
 // TODO: Score,
 // 
+
 
