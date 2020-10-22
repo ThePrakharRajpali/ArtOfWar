@@ -52,6 +52,7 @@ class Board extends React.Component {
 			blueScore: 0,
 			name:"",
 			room:"",
+			clickMask: false,
 		};
 		this.socket = io(ENDPOINT);
 	}
@@ -90,6 +91,7 @@ class Board extends React.Component {
 				redScore: data.redScore,
 				blueTurn: data.blueTurn,
 				isSetup: data.isSetup,
+				clickMask: false,
 			});
 		});
 
@@ -261,7 +263,7 @@ class Board extends React.Component {
 	}
 
 	handlePanelClick(i, j){
-		if(this.state.isSetup){
+		if(this.state.isSetup && !this.state.clickMask){
 			let maxPieces = [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1];
 		
 			if(!this.state.isListening){
@@ -669,7 +671,7 @@ class Board extends React.Component {
 	}
 
 	handleClick(i,j) {
-		if(this.state.isSetup) {
+		if(this.state.isSetup && !this.state.clickMask) {
 
 			if(this.state.pieceToAdd !== null){
 				if(this.state.squares[10*i+j].hasPiece === false){
@@ -682,7 +684,7 @@ class Board extends React.Component {
 			}
 
 			// this.testSetup()
-		} else if(this.state.isGameOn && this.state.isPlayerBlue === this.state.blueTurn){
+		} else if(!this.state.clickMask && this.state.isGameOn && this.state.isPlayerBlue === this.state.blueTurn){
 			let blt = this.state.blueTurn;
 			if(!this.state.isListening) {
 				this.firstClick(i, j);
@@ -778,9 +780,13 @@ class Board extends React.Component {
 
 	redReadyButton() {
 		if(this.state.numRed<40) alert('Place all pieces first.');
-		else this.socket.emit("redReady",function(){
-			console.log("Red is ready");				
-		});
+		else {
+			this.socket.emit("redReady",function(){
+				console.log("Red is ready");				
+			});
+
+			this.setState({clickMask:true});
+		}
 	}
 }
 
