@@ -56,6 +56,32 @@ class Board extends React.Component {
 		};
 	}
 
+	componentDidMount(){
+		//;
+		if(this.props.location!==undefined){
+			//const name = this.props.location.state.name;
+			const room = this.props.location.state.roomid;
+			socket = io(ENDPOINT);
+
+			socket.emit('join',room);
+
+			socket.emit('disconnect',function(){
+				console.log("bye bye!!");				
+			});
+
+			socket.on("roomid", ({ roomid, isPlayerBlue }) => {
+				this.setState({ isPlayerBlue: isPlayerBlue});	
+			});
+
+			// join(roomid) {
+			// 	console.log("joining");
+			// 	this.socket.emit("join", roomid);
+			// }
+
+		}
+	}
+
+
 	renderSquare(i, j) {
 
 		let square = this.state.squares[10*i+j];
@@ -464,7 +490,7 @@ class Board extends React.Component {
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[this.state.lastClicked].hasPiece = false;
 
-				if(newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isBlue){
+				if(newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isBlue){
 					blueScore += nextRank;
 				} else {
 					redScore += nextRank;
@@ -687,33 +713,6 @@ class Board extends React.Component {
 		}
 
 	}
-
-	componentDidMount(){
-		//;
-		if(this.props.location!==undefined){
-			//const name = this.props.location.state.name;
-			const room = this.props.location.state.roomid;
-			socket = io(ENDPOINT);
-
-			socket.emit('join',room);
-
-			socket.emit('disconnect',function(){
-				console.log("bye bye!!");				
-			});
-
-			socket.on("roomid", ({ roomid, isPlayerBlue }) => {
-				this.setState({ isPlayerBlue: isPlayerBlue});	
-			});
-
-			// join(roomid) {
-			// 	console.log("joining");
-			// 	this.socket.emit("join", roomid);
-			// }
-
-		}
-	}
-
-
 }
 
 
@@ -816,10 +815,4 @@ class Piece {
 }
 
 export default Board;
-ReactDOM.render(<Board/>, document.getElementById("root"));
-
-
-// TODO: Score,
-// 
-
-
+// ReactDOM.render(<Board/>, document.getElementById("root"));
