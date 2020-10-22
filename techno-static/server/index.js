@@ -17,6 +17,7 @@ const initState = {
     redScore: 0,
     isGameOn: true,
     blueTurn: false,
+    isSetup: true,
 };
 
 const room={
@@ -50,20 +51,19 @@ io.on('connection', (socket) => {
                 rooms[data].red = socket.id;
                 rooms[data].limit = 1;
                 rooms[data].roomState = initState;
-                console.log(rooms[data]);
+                rooms[data].blueReady = false;
+                rooms[data].redReady = false;
                 socket.emit("roomid", { roomid: data, isPlayerBlue: false});
                 console.log("room created?");
             } else {
                 if (rooms[data].red === undefined) {
                     rooms[data].red = socket.id;
                     rooms[data].limit += 1;
-                    console.log(rooms[data]);
                     socket.emit("roomid", { roomid: data, isPlayerBlue: false});
                     console.log("red boi in");
                 } else {
                     rooms[data].blue = socket.id;
                     rooms[data].limit += 1;
-                    console.log(rooms[data]);
                     socket.emit("roomid", { roomid: data,isPlayerBlue: true});
                     console.log("blue boi in");
                 }
@@ -88,12 +88,39 @@ io.on('connection', (socket) => {
         }}
         console.log(`${socket.id} disconnected`);
     });
-    
-    socket.on('roomid',({roomid,isRed}) =>{
-        this.isRed = isRed;
+
+    socket.on("blueReady",() => {
+        rooms[socketIds[socket.id]].blueReady = true;
+        console.log("Blue is ready now.")
+        if(rooms[socketIds[socket.id]].blueReady && rooms[socketIds[socket.id]].redReady){
+            rooms[socketIds[socket.id]].roomState.isSetup = false;
+            io.to(socketIds[socket.id]).emit("setupDone",rooms[socketIds[socket.id]].roomState);
+            console.log("Setup is done.");
+        }
+    });
+
+    socket.on("redReady",() => {
+        rooms[socketIds[socket.id]].redReady = true;
+        console.log("Red is ready now.")
+        if(rooms[socketIds[socket.id]].blueReady && rooms[socketIds[socket.id]].redReady){
+            rooms[socketIds[socket.id]].roomState.isSetup = false;
+            io.to(socketIds[socket.id]).emit("setupDone",rooms[socketIds[socket.id]].roomState);
+            console.log("Setup is done.");
+        }
+    });
+
+    socket.on("newPieceAdd", (data) =>{
+        rooms[socketIds[socket.id]].roomState.squares = data.squares;
+        rooms[socketIds[socket.id]].roomState.pieces = data.pieces;
+
+        io.to(socketIds[socket.id]).emit("newPieceAddedInfo", rooms[socketIds[socket.id]].roomState);
     });
 });
 
 app.use(router);
 
 server.listen(PORT,() => console.log('Server has started on port',PORT));
+
+//TODO
+//Restrict opposite movement when not in turn (done)
+//
