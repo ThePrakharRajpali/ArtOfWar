@@ -25,6 +25,7 @@ mongoose.connect("mongodb+srv://Shridam:Techno20@cluster0.zrjf3.mongodb.net/Inno
 const Match = require("./match");
 
 
+const maxTime = 20*60;
 
 
 const initState = {
@@ -46,6 +47,8 @@ const room={
 
 const socketIds = {};
 const rooms = {};
+const timeintervals = {};
+const intervals = {};
 
 
 app.use(cors({ origin: "http://localhost:3000" }));
@@ -73,6 +76,9 @@ io.on('connection', (socket) => {
                 rooms[data].roomState = initState;
                 rooms[data].blueReady = false;
                 rooms[data].redReady = false;
+                timeintervals[data]={}
+                timeintervals[data].red=maxTime;
+                timeintervals[data].blue=maxTime;
                 socket.emit("roomid", { roomid: data, isPlayerBlue: false});
                 console.log("room created?");
             } else {
@@ -115,6 +121,11 @@ io.on('connection', (socket) => {
         if(rooms[socketIds[socket.id]].blueReady && rooms[socketIds[socket.id]].redReady){
             rooms[socketIds[socket.id]].roomState.isSetup = false;
             io.to(socketIds[socket.id]).emit("setupDone",rooms[socketIds[socket.id]].roomState);
+            intervals[socketIds[socket.id]] = setInterval(() => {
+                if(rooms[socketIds[socket.id]].roomState.blueTurn === true) {--timeintervals[socketIds[socket.id]].blue;
+                }else{--timeintervals[socketIds[socket.id]].red;}
+                io.to(socketIds[socket.id]).emit("timer", timeintervals[socketIds[socket.id]] )
+            },1000);
             console.log("Setup is done.");
         }
     });
@@ -125,6 +136,11 @@ io.on('connection', (socket) => {
         if(rooms[socketIds[socket.id]].blueReady && rooms[socketIds[socket.id]].redReady){
             rooms[socketIds[socket.id]].roomState.isSetup = false;
             io.to(socketIds[socket.id]).emit("setupDone",rooms[socketIds[socket.id]].roomState);
+            intervals[socketIds[socket.id]] = setInterval(() => {
+                if(rooms[socketIds[socket.id]].roomState.blueTurn === true) {--timeintervals[socketIds[socket.id]].blue;
+                }else{--timeintervals[socketIds[socket.id]].red;}
+                io.to(socketIds[socket.id]).emit("timer", timeintervals[socketIds[socket.id]] )
+            },1000);
             console.log("Setup is done.");
         }
     });

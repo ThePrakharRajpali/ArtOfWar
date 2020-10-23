@@ -60,6 +60,8 @@ class Board extends React.Component {
 			name:"",
 			room:"",
 			clickMask: false,
+			redTime: 60*20,
+			blueTime: 60*20,
 		};
 		this.socket = io(ENDPOINT);
 	}
@@ -112,6 +114,13 @@ class Board extends React.Component {
 				isListening: false,
 			});
 		});
+
+		this.socket.on("timer", (timeinterval) => {
+            this.setState({
+                blueTime:timeinterval.blue,
+                redTime:timeinterval.red,
+            });
+        });
 	}
 
 
@@ -120,7 +129,9 @@ class Board extends React.Component {
 		let square = this.state.squares[10*i+j];
 		let pieces = this.state.pieces;
 		let disp = null;
-		if(square.hasPiece === true) disp = pieces[square.pieceid.isBlue][square.pieceid.index].rank;
+		if(square.hasPiece === true && pieces[square.pieceid.isBlue][square.pieceid.index].rank===-1) disp = 'B';
+		else if(square.hasPiece === true && pieces[square.pieceid.isBlue][square.pieceid.index].rank===0) disp = 'F';
+		else if(square.hasPiece === true) disp = pieces[square.pieceid.isBlue][square.pieceid.index].rank;
 
 		let className;
 		if(square.isLake) className="squarelake";
@@ -207,6 +218,9 @@ class Board extends React.Component {
          else className="squareredoccupied bombR";
          className="squareredoccupied";
          disp=j-1;
+
+         if(j==0) disp = 'B';
+         if(j==1) disp = 'F';
 		} 
 
 		else{ 
@@ -224,6 +238,9 @@ class Board extends React.Component {
          else className="squareblueoccupied bombB";
          className="squareblueoccupied";
          disp=j-1;
+
+         if(j==0) disp = 'B';
+         if(j==1) disp = 'F';
 		} 
 			return (
 				<Square
@@ -714,6 +731,8 @@ class Board extends React.Component {
 
 		let Panel = null;
 		let readyButton = null;
+		let timerPanelRed = null;
+		let timerPanelBlue = null;
 
 		if(this.state.isSetup){
 			if(this.state.isPlayerBlue) Panel = <div>{this.renderPanelRow(2)}{this.renderPanelRow(3)}</div>;
@@ -724,6 +743,11 @@ class Board extends React.Component {
 			if(this.state.isPlayerBlue) readyButton = <button onClick={()=>this.blueReadyButton()}>Ready</button>;
 			else readyButton = <button onClick={()=>this.redReadyButton()}>Ready</button>;
 		}
+
+		if(!this.state.isSetup){
+			timerPanelRed = <p>Red is left with <p>{this.state.redTime}</p></p>;
+			timerPanelBlue = <p>Blue is left with <p>{this.state.blueTime}</p></p>;
+		}	
 
 		if(this.state.isPlayerBlue){
 			return (
@@ -763,6 +787,9 @@ class Board extends React.Component {
 						{Panel}
 						<br></br>
 						{readyButton}
+
+						{timerPanelRed}
+						{timerPanelBlue}
 					</span>
 					<span className=''><h3>Your Score: {this.state.blueScore}</h3></span>
 					</div>
@@ -804,6 +831,9 @@ class Board extends React.Component {
 						{Panel}
 						<br></br>
 						{readyButton}
+
+						{timerPanelRed}
+						{timerPanelBlue}
 					</span>
 					<span className=''><h3>Your Score: {this.state.redScore}</h3></span>
 					</div>
