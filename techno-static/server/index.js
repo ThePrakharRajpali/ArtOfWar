@@ -88,12 +88,10 @@ io.on('connection', (socket) => {
             console.log("red boi left");
             rooms[socketIds[socket.id]].red= undefined;
             rooms[socketIds[socket.id]].limit--;
-            delete socketIds[socket.id];
         } else if(rooms[socketIds[socket.id]].blue ===socket.id){
             console.log("blue boi left");
             rooms[socketIds[socket.id]].blue= undefined;
             rooms[socketIds[socket.id]].limit--;
-            delete socketIds[socket.id];
         }}
         console.log(`${socket.id} disconnected`);
     });
@@ -114,8 +112,8 @@ io.on('connection', (socket) => {
         rooms[socketIds[socket.id]].roomState.isGameOn = false;
         clearInterval(intervals[socketIds[socket.id]]);
 
-        if(data===0 && rooms[socketIds[socket.id]].roomsState.redScore < 180)  rooms[socketIds[socket.id]].roomState.redScore += 180;
-        if(data===1 && rooms[socketIds[socket.id]].roomsState.blueScore < 180)  rooms[socketIds[socket.id]].roomState.blueScore += 180;
+        if(data===0 && rooms[socketIds[socket.id]].roomState.redScore < 180)  rooms[socketIds[socket.id]].roomState.redScore += 180;
+        if(data===1 && rooms[socketIds[socket.id]].roomState.blueScore < 180)  rooms[socketIds[socket.id]].roomState.blueScore += 180;
 
     });
 
