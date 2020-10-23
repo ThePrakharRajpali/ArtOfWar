@@ -76,8 +76,21 @@ class Board extends React.Component {
 			console.log("bye bye!!");				
 		});
 
-		this.socket.on("roomid", ({ roomid, isPlayerBlue }) => {
-			this.setState({ isPlayerBlue: isPlayerBlue});	
+		this.socket.on("roomid", ({ roomid, isPlayerBlue, roomState }) => {
+			this.setState({
+				isPlayerBlue: isPlayerBlue,
+				squares: roomState.squares,
+				pieces: roomState.pieces,
+				blueScore: roomState.blueScore,
+				redScore: roomState.redScore,
+				isGameOn: roomState.isGameOn,
+				blueTurn: roomState.blueTurn,
+				isSetup: roomState.isSetup,
+				numBlue: roomState.numBlue,
+				numRed: roomState.numRed,
+				initialRedPiece: roomState.initialRedPiece,
+				initialBluePiece: roomState.initialBluePiece,
+			});	
 		});
 
 		this.socket.on("move", (data) => {
@@ -108,6 +121,10 @@ class Board extends React.Component {
 			this.setState({
 				squares: data.squares,
 				pieces: data.pieces,
+				initialBluePiece: data.initialBluePiece,
+				initialRedPiece: data.initialRedPiece,
+				numRed: data.numRed,
+				numBlue: data.numBlue,
 				pieceToAdd: null,
 				pieceToMove: null,
 				lastClicked: null,
@@ -381,6 +398,10 @@ class Board extends React.Component {
 				let toSend = {
 					squares: newSquares,
 					pieces: newPieces,
+					initialBluePiece: bluePieces,
+					initialRedPiece: redPieces,
+					numRed: redCount,
+					numBlue: blueCount,
 				};
 
 				this.socket.emit("newPieceAdd", toSend);
@@ -439,6 +460,10 @@ class Board extends React.Component {
 			let toSend = {
 				squares: newSquares,
 				pieces: newPieces,
+				initialBluePiece: this.state.initialBluePiece,
+				initialRedPiece: this.state.initialRedPiece,
+				numRed: this.state.redCount,
+				numBlue: this.state.blueCount,
 			};
 
 			this.socket.emit("newPieceAdd", toSend);
@@ -937,34 +962,34 @@ function makePieceArray(isBlue) {
 	let part = [];
 
 	for(let i = 0;i<6;i++)
-		part.push(new Piece(isBlue,-1,false));
+		part.push(pieceMaker(isBlue,-1,false));
 
-	part.push(new Piece(isBlue,0,false));
-	part.push(new Piece(isBlue,1,true));
+	part.push(pieceMaker(isBlue,0,false));
+	part.push(pieceMaker(isBlue,1,true));
 
 	for(let i=0;i<7;i++)
-		part.push(new Piece(isBlue,2,true));
+		part.push(pieceMaker(isBlue,2,true));
 
 	for(let i=0;i<5;i++)
-		part.push(new Piece(isBlue,3,true));
+		part.push(pieceMaker(isBlue,3,true));
 
 	for(let i=0;i<5;i++)
-		part.push(new Piece(isBlue,4,true));
+		part.push(pieceMaker(isBlue,4,true));
 
 	for(let i=0;i<4;i++)
-		part.push(new Piece(isBlue,5,true));
+		part.push(pieceMaker(isBlue,5,true));
 
 	for(let i=0;i<4;i++)
-		part.push(new Piece(isBlue,6,true));
+		part.push(pieceMaker(isBlue,6,true));
 
 	for(let i=0;i<3;i++)
-		part.push(new Piece(isBlue,7,true));
+		part.push(pieceMaker(isBlue,7,true));
 
 	for(let i=0;i<2;i++)
-		part.push(new Piece(isBlue,8,true));
+		part.push(pieceMaker(isBlue,8,true));
 
-	part.push(new Piece(isBlue,9,true));
-	part.push(new Piece(isBlue,10,true));
+	part.push(pieceMaker(isBlue,9,true));
+	part.push(pieceMaker(isBlue,10,true));
 
 	return part;
 }
@@ -986,14 +1011,16 @@ function isNear (a, b) {
 	return ((Math.abs(a%10 - b%10) <= 1) && (Math.abs(Math.floor(a/10) - Math.floor(b/10)) <= 1));
 }
 
-class Piece {
-	constructor(isBlue,rank,isMovable) {
-		this.isBlue = isBlue;
-		this.pos = null;
-		this.rank = rank;
-		this.isAlive = true;
-		this.isMovable = isMovable;
-	}
+function pieceMaker(isBlue, rank, isMovable) {
+	let piece = {
+		isBlue: isBlue,
+		pos: null,
+		rank: rank,
+		isMovable: isMovable,
+		isAlive: true,
+	};
+
+	return piece;
 }
 
 function Help() {
