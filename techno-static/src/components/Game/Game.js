@@ -3,8 +3,14 @@ import ReactDOM from 'react-dom';
 import queryString from 'query-string';
 import io from 'socket.io-client';
 import '../../index.css';
+import Container from 'react-bootstrap/Container'
+import Navbar from 'react-bootstrap/Navbar';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import logo from '../../Techno-logo_2_20.png';
+import Popover from 'react-bootstrap/Popover';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
-let socket;
 const ENDPOINT = 'localhost:5000';
 
 // const roomId = ({ location }) => {
@@ -53,8 +59,61 @@ class Board extends React.Component {
 			blueScore: 0,
 			name:"",
 			room:"",
+			clickMask: false,
 		};
+		this.socket = io(ENDPOINT);
 	}
+
+	componentDidMount(){
+		//const name = this.props.location.state.name;
+		const room = this.props.location.state.roomid;
+
+		this.socket.emit('join',room);
+
+		this.socket.emit('disconnect',function(){
+			console.log("bye bye!!");				
+		});
+
+		this.socket.on("roomid", ({ roomid, isPlayerBlue }) => {
+			this.setState({ isPlayerBlue: isPlayerBlue});	
+		});
+
+		this.socket.on("move", (data) => {
+			this.setState({
+				squares: data.squares,
+				pieces: data.pieces,
+				isGameOn: data.isGameOn,
+				blueScore: data.blueScore,
+				redScore: data.redScore,
+				blueTurn: data.blueTurn,
+			});
+		});
+
+		this.socket.on("setupDone", (data) =>{
+			this.setState({
+				squares: data.squares,
+				pieces: data.pieces,
+				isGameOn: data.isGameOn,
+				blueScore: data.blueScore,
+				redScore: data.redScore,
+				blueTurn: data.blueTurn,
+				isSetup: data.isSetup,
+				clickMask: false,
+			});
+		});
+
+		this.socket.on("newPieceAddedInfo", (data) => {
+			this.setState({
+				squares: data.squares,
+				pieces: data.pieces,
+				pieceToAdd: null,
+				pieceToMove: null,
+				lastClicked: null,
+				isListening: false,
+			});
+		});
+	}
+
 
 	renderSquare(i, j) {
 
@@ -211,7 +270,7 @@ class Board extends React.Component {
 	}
 
 	handlePanelClick(i, j){
-		if(this.state.isSetup){
+		if(this.state.isSetup && !this.state.clickMask){
 			let maxPieces = [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1];
 		
 			if(!this.state.isListening){
@@ -275,13 +334,19 @@ class Board extends React.Component {
 				redPieces[newPieces[pieceColor][pieceIndex].rank + 1] -= 1;
 			}
 
+			let toSend = {
+				squares: newSquares,
+				pieces: newPieces,
+			};
+
+			this.socket.emit("newPieceAdd", toSend);
+
 			this.setState({
 				squares: newSquares,
 				pieces: newPieces,
 				numRed: redCount,
 				numBlue: blueCount,
 				isListening: false,
-				isSetup: !(blueCount>=40 && redCount >= 40),
 				initialBluePiece: bluePieces,
 				initialRedPiece: redPieces,
 				pieceToAdd: null,
@@ -293,12 +358,14 @@ class Board extends React.Component {
 		if(this.state.isListening || !this.state.squares[10*i+j].hasPiece){
 			return;
 		}else{
-			let newPiece = this.state.squares[10*i+j].pieceid;
-			this.setState({
-				pieceToMove: newPiece,
-				isListening: true,
-				lastClicked: 10*i+j,
-			});
+			if(this.state.isPlayerBlue == this.state.squares[10*i+j].pieceid.isBlue){
+				let newPiece = this.state.squares[10*i+j].pieceid;
+				this.setState({
+					pieceToMove: newPiece,
+					isListening: true,
+					lastClicked: 10*i+j,
+				});
+			}
 		}
 	}
 
@@ -323,6 +390,13 @@ class Board extends React.Component {
 				newSquares[this.state.lastClicked].hasPiece = false;
 				newSquares[this.state.lastClicked].pieceid = null;
 			}
+
+			let toSend = {
+				squares: newSquares,
+				pieces: newPieces,
+			};
+
+			this.socket.emit("newPieceAdd", toSend);
 
 			this.setState({
 				squares: newSquares,
@@ -464,7 +538,7 @@ class Board extends React.Component {
 				newSquares[this.state.lastClicked].pieceid = null;
 				newSquares[this.state.lastClicked].hasPiece = false;
 
-				if(newPieces[lastSquare.pieceid.isBlue][lastSquare.pieceid.index].isBlue){
+				if(newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isBlue){
 					blueScore += nextRank;
 				} else {
 					redScore += nextRank;
@@ -579,6 +653,17 @@ class Board extends React.Component {
 
 		let blt = this.state.blueTurn;
 
+		let toSend = {
+			turn: !blt,
+			isGameOn: !this.flagCaptured(),
+			blueScore: blueScore,
+			redScore: redScore,
+			squares: newSquares,
+			pieces: newPieces,
+		};
+
+		this.socket.emit("moved", toSend);
+
 		this.setState({
 			squares: newSquares,
 			pieces: newPieces,
@@ -592,10 +677,8 @@ class Board extends React.Component {
 		return;
 	}
 
-	
-
 	handleClick(i,j) {
-		if(this.state.isSetup) {
+		if(this.state.isSetup && !this.state.clickMask) {
 
 			if(this.state.pieceToAdd !== null){
 				if(this.state.squares[10*i+j].hasPiece === false){
@@ -606,15 +689,10 @@ class Board extends React.Component {
 			}else{
 				this.setupSecondClick(i,j);
 			}
-			// if(this.state.squares[10*i + j].hasPiece === false){
-			// 	if(this.state.isListening){
-			// 		this.setupAddPiece(i, j);
-			// 	}
-			// }
 
 			// this.testSetup()
-		} else if(this.state.isGameOn){
-			var blt = this.state.blueTurn;
+		} else if(!this.state.clickMask && this.state.isGameOn && this.state.isPlayerBlue === this.state.blueTurn){
+			let blt = this.state.blueTurn;
 			if(!this.state.isListening) {
 				this.firstClick(i, j);
 				return;
@@ -629,17 +707,36 @@ class Board extends React.Component {
 	render() {
 
 		let Panel = null;
+		let readyButton = null;
 
 		if(this.state.isSetup){
 			if(this.state.isPlayerBlue) Panel = <div>{this.renderPanelRow(2)}{this.renderPanelRow(3)}</div>;
 			else Panel = <div>{this.renderPanelRow(0)}{this.renderPanelRow(1)}</div>;
 		}
 
+		if(this.state.isSetup){
+			if(this.state.isPlayerBlue) readyButton = <button onClick={()=>this.blueReadyButton()}>Ready</button>;
+			else readyButton = <button onClick={()=>this.redReadyButton()}>Ready</button>;
+		}
+
 		if(this.state.isPlayerBlue){
 			return (
 				<div>
-					<h3>{this.state.redScore}</h3>
-					<div className="table">
+					<span>
+  						<Navbar /*className="justify-content-center"*/ expand="lg" variant="dark" bg="dark">
+							<span><TechnoLogo/></span>
+						  	{/* <span className='help'> <img src={logo}></img>   </span> */}
+							<Navbar.Brand className='mx-auto' href="#"><h1>Ultimate Stratego</h1></Navbar.Brand>
+							<span className='help'><Help/></span>
+  						</Navbar>
+						
+						
+					</span>
+					
+					<div className='table'>
+					
+					<span className=''><br></br><h3>Your Opponent's Score: {this.state.redScore}</h3><br></br></span>
+					<span className="">
 						
 
 						{this.renderRow(11)}
@@ -654,17 +751,34 @@ class Board extends React.Component {
 						{this.renderRow(2)}
 						{this.renderRow(1)}
 						{this.renderRow(0)}
-
+					</span>
+					<span className=''>
+						<br></br>
 						{Panel}
+						<br></br>
+						{readyButton}
+					</span>
+					<span className=''><h3>Your Score: {this.state.blueScore}</h3></span>
 					</div>
-					<h3>{this.state.blueScore}</h3>
+					<span className='footer'>Copyright (C) Technothlon 2019-20</span>
 				</div>
 				);
 		} else{
 			return (
 				<div>
-					<h3>{this.state.blueScore}</h3>
-					<div className="table">
+					<span>
+  						<Navbar /*className="justify-content-center"*/ expand="lg" variant="dark" bg="dark">
+							<span><TechnoLogo/></span>
+						  	{/* <span className='help'> <img src={logo}></img>   </span> */}
+    						<Navbar.Brand className='mx-auto' href="#"><h1>Ultimate Stratego</h1></Navbar.Brand>
+							<span className='help'><Help/></span>
+  						</Navbar>
+						
+					</span>
+					
+					<div className='table'>
+					<span className=''><br></br><h3>Your Opponent's Score: {this.state.blueScore}</h3><br></br></span>
+					<span className="">
 
 						{this.renderRow(0)}
 						{this.renderRow(1)}
@@ -678,42 +792,43 @@ class Board extends React.Component {
 						{this.renderRow(9)}
 						{this.renderRow(10)}
 						{this.renderRow(11)}
-					
+					</span>
+					<span className=''>
+						<br></br>
 						{Panel}
+						<br></br>
+						{readyButton}
+					</span>
+					<span className=''><h3>Your Score: {this.state.redScore}</h3></span>
 					</div>
-					<h3>{this.state.redScore}</h3>
+					<div className='footer'>Copyright (C) Technothlon 2019-20</div>
 				</div>
 				);
 		}
 
 	}
 
-	componentDidMount(){
-		//;
-		if(this.props.location!==undefined){
-			//const name = this.props.location.state.name;
-			const room = this.props.location.state.roomid;
-			socket = io(ENDPOINT);
-
-			socket.emit('join',room);
-
-			socket.emit('disconnect',function(){
-				console.log("bye bye!!");				
+	blueReadyButton() {
+		if(this.state.numBlue<40) alert('Place all pieces first.');
+		else {
+			this.socket.emit("blueReady",function(){
+				console.log("Blue is Ready");				
 			});
 
-			socket.on("roomid", ({ roomid, isPlayerBlue }) => {
-				this.setState({ isPlayerBlue: isPlayerBlue});	
-			});
-
-			// join(roomid) {
-			// 	console.log("joining");
-			// 	this.socket.emit("join", roomid);
-			// }
-
+			this.setState({clickMask:true});
 		}
 	}
 
+	redReadyButton() {
+		if(this.state.numRed<40) alert('Place all pieces first.');
+		else {
+			this.socket.emit("redReady",function(){
+				console.log("Red is ready");				
+			});
 
+			this.setState({clickMask:true});
+		}
+	}
 }
 
 
@@ -815,11 +930,51 @@ class Piece {
 	}
 }
 
+function Help() {
+	const [show, setShow] = useState(false);
+  
+	const handleClose = () => setShow(false);
+	const handleShow = () => setShow(true);
+  
+	return (
+	  <span>
+		<Button variant="primary" onClick={handleShow}>
+		  Help
+		</Button>
+  
+		<Modal show={show} onHide={handleClose}>
+		  <Modal.Header closeButton>
+			<Modal.Title>Modal heading</Modal.Title>
+		  </Modal.Header>
+		  <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+		  <Modal.Footer>
+			<Button variant="secondary" onClick={handleClose}>
+			  Close
+			</Button>
+			{/* <Button variant="primary" onClick={handleClose}>
+			  Save Changes
+			</Button> */}
+		  </Modal.Footer>
+		</Modal>
+	  </span>
+	);
+  }
+
+const popover = (
+	<Popover id="popover-basic">
+	  <Popover.Title as="h3">Message from Technothlon</Popover.Title>
+	  <Popover.Content>
+		Good luck playing the game of Ultimate Stratego ;)
+	  </Popover.Content>
+	</Popover>
+  );
+  
+  const TechnoLogo = () => (
+	<OverlayTrigger trigger="click" placement="right" overlay={popover}>
+		<img src={logo} alt='technologo'></img>
+	  {/* <Button variant="success">Click</Button> */}
+	</OverlayTrigger>
+  );
+
 export default Board;
-ReactDOM.render(<Board/>, document.getElementById("root"));
-
-
-// TODO: Score,
-// 
-
-
+// ReactDOM.render(<Board/>, document.getElementById("root"));
