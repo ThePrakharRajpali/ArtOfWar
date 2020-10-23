@@ -1141,8 +1141,8 @@ z-index: 0;
 background-size: cover;
 }
 .squarehighlighted {
-  background: #0f0;
-  border: 1px solid #999;
+  background: rgb(6, 179, 6);
+  border: 1px solid black;
   float: left;
   font-size: 12px;
   font-weight: bold;
@@ -1155,12 +1155,43 @@ background-size: cover;
   width: 45px;
 }
 
-.squareredoccupied {
+/*.squareredoccupied {
   background: #f00;
-  border: 1px solid #999;
+  border: 1px solid black;
   float: left;
   font-size: 12px;
   font-weight: bold;
+  line-height: 45px;
+  height: 45px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 45px;
+}*/
+
+/*.squareblueoccupied {
+  background: #0ff;
+  border: 1px solid black;
+  float: left;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 45px;
+  height: 45px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+
+  width: 45px;
+}*/
+.squareredoccupied {
+  background: rgb(184, 0, 0);
+  border: 1px solid black;
+  float: left;
+  font-size: 12px;
+  font-weight: bold;
+  font-color: white;
   line-height: 45px;
   height: 45px;
   margin-right: -1px;
@@ -1171,38 +1202,8 @@ background-size: cover;
 }
 
 .squareblueoccupied {
-  background: #0ff;
-  border: 1px solid #999;
-  float: left;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 45px;
-  height: 45px;
-  margin-right: -1px;
-  margin-top: -1px;
-  padding: 0;
-  text-align: center;
-
-  width: 45px;
-}
-.squareredoccupied {
-  background: #f00;
-  border: 1px solid #999;
-  float: left;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 45px;
-  height: 45px;
-  margin-right: -1px;
-  margin-top: -1px;
-  padding: 0;
-  text-align: center;
-  width: 45px;
-}
-
-.squareblueoccupied {
-  background: #0ff;
-  border: 1px solid #999;
+  background: rgb(0, 167, 167);
+  border: 1px solid black;
   float: left;
   font-size: 12px;
   font-weight: bold;
@@ -1216,7 +1217,7 @@ background-size: cover;
 }
 .squarehighlightattack {
   background: purple;
-  border: 1px solid #999;
+  border: 1px solid black;
   float: left;
   font-size: 12px;
   font-weight: bold;
@@ -1230,7 +1231,7 @@ background-size: cover;
 }
 
 .table{
-  background-color: #8ebff0;
+  background-color: #495159;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -1238,6 +1239,11 @@ background-size: cover;
   justify-content: center;
   /*font-size: calc(10px + 2vmin);
   color: white;*/
+}
+
+.footer{
+  text-align: right;
+  
 }
 
 .bombB{
