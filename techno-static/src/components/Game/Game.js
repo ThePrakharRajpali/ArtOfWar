@@ -60,6 +60,8 @@ class Board extends React.Component {
 			name:"",
 			room:"",
 			clickMask: false,
+			redTime: 60*20,
+			blueTime: 60*20,
 		};
 		this.socket = io(ENDPOINT);
 	}
@@ -112,6 +114,35 @@ class Board extends React.Component {
 				isListening: false,
 			});
 		});
+
+		this.socket.on("timer", (timeinterval) => {
+            this.setState({
+                blueTime:timeinterval.blue,
+                redTime:timeinterval.red,
+            });
+        });
+
+        this.socket.on("Ended", (data) => {
+        	console.log(this.isPlayerBlue);
+        	console.log(data);
+        	if(this.state.isPlayerBlue==data) alert("Congratulations, You won!!");
+            else alert("you lost :( better luck next time");
+            this.state.ended=1;
+            console.log(this.state)
+            this.setState({
+               isGameOn: false,
+            });
+
+            if(this.state.blueScore<180 && this.state.redScore<180){
+            	if(data===0) {
+            		let redScore = this.state.redScore;
+            		this.setState({redScore: redScore+180});
+            	}else{
+            		let blueScore = this.state.blueScore;
+            		this.setState({blueScore: blueScore+180});
+            	}
+            }
+        });
 	}
 
 
@@ -120,7 +151,9 @@ class Board extends React.Component {
 		let square = this.state.squares[10*i+j];
 		let pieces = this.state.pieces;
 		let disp = null;
-		if(square.hasPiece === true) disp = pieces[square.pieceid.isBlue][square.pieceid.index].rank;
+		if(square.hasPiece === true && pieces[square.pieceid.isBlue][square.pieceid.index].rank===-1) disp = 'B';
+		else if(square.hasPiece === true && pieces[square.pieceid.isBlue][square.pieceid.index].rank===0) disp = 'F';
+		else if(square.hasPiece === true) disp = pieces[square.pieceid.isBlue][square.pieceid.index].rank;
 
 		let className;
 		if(square.isLake) className="squarelake";
@@ -207,6 +240,9 @@ class Board extends React.Component {
          else className="squareredoccupied bombR";
          className="squareredoccupied";
          disp=j-1;
+
+         if(j==0) disp = 'B';
+         if(j==1) disp = 'F';
 		} 
 
 		else{ 
@@ -224,6 +260,9 @@ class Board extends React.Component {
          else className="squareblueoccupied bombB";
          className="squareblueoccupied";
          disp=j-1;
+
+         if(j==0) disp = 'B';
+         if(j==1) disp = 'F';
 		} 
 			return (
 				<Square
@@ -680,6 +719,10 @@ class Board extends React.Component {
 			redScore: redScore,
 			blueScore: blueScore,
 		});
+
+		if(this.flagCaptured()){
+			this.socket.emit("win", this.state.isPlayerBlue?1:0);
+		}
 		return;
 	}
 
@@ -714,16 +757,23 @@ class Board extends React.Component {
 
 		let Panel = null;
 		let readyButton = null;
+		let resignButton = null;
+		let timerPanelRed = null;
+		let timerPanelBlue = null;
 
 		if(this.state.isSetup){
 			if(this.state.isPlayerBlue) Panel = <div>{this.renderPanelRow(2)}{this.renderPanelRow(3)}</div>;
 			else Panel = <div>{this.renderPanelRow(0)}{this.renderPanelRow(1)}</div>;
 		}
 
-		if(this.state.isSetup){
-			if(this.state.isPlayerBlue) readyButton = <button onClick={()=>this.blueReadyButton()}>Ready</button>;
-			else readyButton = <button onClick={()=>this.redReadyButton()}>Ready</button>;
-		}
+		if(this.state.isSetup) readyButton = <button onClick={()=>this.readyClick()}>Ready</button>;
+
+		if(!this.state.isSetup){
+			timerPanelRed = <p>Red is left with <p>{this.state.redTime}</p></p>;
+			timerPanelBlue = <p>Blue is left with <p>{this.state.blueTime}</p></p>;
+		}	
+
+		if(this.state.isGameOn && !this.state.isSetup) resignButton = <button onClick={()=>{this.socket.emit("win", this.state.isPlayerBlue?0:1);}}>Resign</button>
 
 		if(this.state.isPlayerBlue){
 			return (
@@ -763,6 +813,10 @@ class Board extends React.Component {
 						{Panel}
 						<br></br>
 						{readyButton}
+						{resignButton}
+						<br></br>
+						{timerPanelRed}
+						{timerPanelBlue}
 					</span>
 					<span className=''><h3>Your Score: {this.state.blueScore}</h3></span>
 					</div>
@@ -804,6 +858,10 @@ class Board extends React.Component {
 						{Panel}
 						<br></br>
 						{readyButton}
+						{resignButton}
+						<br></br>
+						{timerPanelRed}
+						{timerPanelBlue}
 					</span>
 					<span className=''><h3>Your Score: {this.state.redScore}</h3></span>
 					</div>
@@ -814,25 +872,27 @@ class Board extends React.Component {
 
 	}
 
-	blueReadyButton() {
-		if(this.state.numBlue<40) alert('Place all pieces first.');
-		else {
-			this.socket.emit("blueReady",function(){
-				console.log("Blue is Ready");				
-			});
+	readyClick(){
+		if(!this.state.clickMask){
+			if(this.state.isPlayerBlue){
+				if(this.state.numBlue<40) alert('Place all pieces first.');
+				else {
+					this.socket.emit("ready",function(){
+						console.log("Blue is Ready");				
+					});
 
-			this.setState({clickMask:true});
-		}
-	}
+					this.setState({clickMask:true});
+				}
+			}else{
+				if(this.state.numRed<40) alert('Place all pieces first.');
+				else {
+					this.socket.emit("ready",function(){
+						console.log("Red is ready");				
+					});
 
-	redReadyButton() {
-		if(this.state.numRed<40) alert('Place all pieces first.');
-		else {
-			this.socket.emit("redReady",function(){
-				console.log("Red is ready");				
-			});
-
-			this.setState({clickMask:true});
+					this.setState({clickMask:true});
+				}
+			}
 		}
 	}
 }
