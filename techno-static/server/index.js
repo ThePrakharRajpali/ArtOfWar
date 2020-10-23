@@ -70,28 +70,69 @@ io.on('connection', (socket) => {
 	socket.on("join", (data) => {
         if (rooms[data] === undefined || rooms[data].limit < 2) {
             if (rooms[data] === undefined) {
-                rooms[data] = {};
-                rooms[data].red = socket.id;
-                rooms[data].limit = 1;
-                rooms[data].roomState = initState;
-                rooms[data].blueReady = false;
-                rooms[data].redReady = false;
-                timeintervals[data]={}
-                timeintervals[data].red=maxTime;
-                timeintervals[data].blue=maxTime;
-                socket.emit("roomid", { roomid: data, isPlayerBlue: false});
-                console.log("room created?");
+                Match.findOne({ room: data })
+                    .exec()
+                    .then((match) => {
+                        if(match !== null){
+                            return;
+                        }
+                        rooms[data] = {};
+                        rooms[data].red = socket.id;
+                        rooms[data].limit = 1;
+                        rooms[data].roomState = initState;
+                        rooms[data].blueReady = false;
+                        rooms[data].redReady = false;
+                        timeintervals[data]={}
+                        timeintervals[data].red=maxTime;
+                        timeintervals[data].blue=maxTime;
+                        socket.emit("roomid", { roomid: data, isPlayerBlue: false});
+                        console.log("room created?");
+
+                        const match2 = new Match({
+                            _id: new mongoose.Types.ObjectId(),
+                            userRed: rollno,
+                            room: data,
+                        });
+                        match2.save();
+                        
+                    });
+                
             } else {
                 if (rooms[data].red === undefined) {
-                    rooms[data].red = socket.id;
-                    rooms[data].limit += 1;
-                    socket.emit("roomid", { roomid: data, isPlayerBlue: false});
-                    console.log("red boi in");
+                    Match.findOne({ room:data }).then((match) => {
+                        if(match.winner !== undefined){
+                            return;
+                        }
+                        if(match.userRed === rollno) {
+                            rooms[data].red = socket.id;
+                            rooms[data].limit += 1;
+                            
+                            if(rooms[data].redTime === undefined){
+                                rooms[data].redTime = maxTime;
+                            }
+                            socket.emit("roomid", { roomid: data, isPlayerBlue: false});
+                            console.log("red boi in");
+                        } else if (match.userBlue === rollno) {
+                            rooms[data].blue = socket.id;
+                            rooms[data].limit += 1;
+                            socket.emit("roomid", { roomid: data,isPlayerBlue: true});
+                            console.log("blue boi in");
+                        }
+                    });
                 } else {
-                    rooms[data].blue = socket.id;
-                    rooms[data].limit += 1;
-                    socket.emit("roomid", { roomid: data,isPlayerBlue: true});
-                    console.log("blue boi in");
+                    Match.findOne({ room: data }).then((match) => {
+                        if(match.winner !== undefined){
+                            return;
+                        }
+                        rooms[data].blue = socket.id;
+                        rooms[data].limit += 1;
+
+                        socket.emit("roomid", { roomid: data,isPlayerBlue: true});
+                        console.log("blue boi in");
+
+                        match.userBlue = rollno;
+                        match.save();
+                    })
                 }
             }
             socketIds[socket.id] = data;
