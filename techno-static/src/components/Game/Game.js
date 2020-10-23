@@ -286,7 +286,11 @@ class Board extends React.Component {
 				}
 				
 				if(curr<40 && this.state.pieces[i/2][curr].rank +1 !== j){
-					return
+					return;
+				}
+
+				if(curr >= 40){
+					return;
 				}
 	
 				this.setState({
@@ -313,44 +317,46 @@ class Board extends React.Component {
 		let redPieces = this.state.initialRedPiece.slice();
 		let bluePieces = this.state.initialBluePiece.slice();
 
-		if(newPieces[pieceColor][pieceIndex].pos === null){
-			if(pieceColor === 1 && 10*i + j <= 39){
-				newSquares[10*i + j].pieceid = {
-					isBlue: 1,
-					index : pieceIndex,
+		{	
+			if(newPieces[pieceColor][pieceIndex].pos === null){
+				if(pieceColor === 1 && 10*i + j <= 39){
+					newSquares[10*i + j].pieceid = {
+						isBlue: 1,
+						index : pieceIndex,
+					}
+					newSquares[10*i + j].hasPiece = true;
+					newPieces[pieceColor][pieceIndex].pos = 10*i + j;
+					blueCount++;
+					bluePieces[newPieces[pieceColor][pieceIndex].rank + 1] -= 1;
+				} else if(pieceColor === 0 && 10*i + j >= 80) {
+					newSquares[10*i + j].pieceid = {
+						isBlue: 0,
+						index : pieceIndex,
+					}
+					newSquares[10*i + j].hasPiece = true;
+					newPieces[pieceColor][pieceIndex].pos = 10*i + j;
+					redCount++;
+					redPieces[newPieces[pieceColor][pieceIndex].rank + 1] -= 1;
 				}
-				newSquares[10*i + j].hasPiece = true;
-				newPieces[pieceColor][pieceIndex].pos = 10*i + j;
-				blueCount++;
-				bluePieces[newPieces[pieceColor][pieceIndex].rank + 1] -= 1;
-			} else if(pieceColor === 0 && 10*i + j >= 80) {
-				newSquares[10*i + j].pieceid = {
-					isBlue: 0,
-					index : pieceIndex,
-				}
-				newSquares[10*i + j].hasPiece = true;
-				newPieces[pieceColor][pieceIndex].pos = 10*i + j;
-				redCount++;
-				redPieces[newPieces[pieceColor][pieceIndex].rank + 1] -= 1;
+
+				let toSend = {
+					squares: newSquares,
+					pieces: newPieces,
+				};
+
+				this.socket.emit("newPieceAdd", toSend);
+
+				this.setState({
+					squares: newSquares,
+					pieces: newPieces,
+					numRed: redCount,
+					numBlue: blueCount,
+					isListening: false,
+					initialBluePiece: bluePieces,
+					initialRedPiece: redPieces,
+					pieceToAdd: null,
+				})
 			}
-
-			let toSend = {
-				squares: newSquares,
-				pieces: newPieces,
-			};
-
-			this.socket.emit("newPieceAdd", toSend);
-
-			this.setState({
-				squares: newSquares,
-				pieces: newPieces,
-				numRed: redCount,
-				numBlue: blueCount,
-				isListening: false,
-				initialBluePiece: bluePieces,
-				initialRedPiece: redPieces,
-				pieceToAdd: null,
-			})
 		}
 	}
 
