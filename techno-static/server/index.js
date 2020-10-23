@@ -1,6 +1,8 @@
-const express = require('express');
+const express  = require('express');
 const socketio = require('socket.io');
-const http = require('http');
+const http     = require('http');
+const cors     = require('cors');
+const mongoose = require('mongoose');
 
 const PORT = process.env.PORT || 5000
 
@@ -9,6 +11,21 @@ const router = require('./router');
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
+
+
+mongoose.connect("mongodb+srv://Shridam:Techno20@cluster0.zrjf3.mongodb.net/Innovate?retryWrites=true&w=majority", {
+    useNewUrlTopology: true,
+    useNewUrlParser: true,
+})
+.then(() => console.log("Database connected"))
+.catch((err) => {
+    console.error("DB Connection Error: ${err.message}");
+});
+
+const Match = require("./match");
+
+
+
 
 const initState = {
     squares: [],
@@ -29,6 +46,9 @@ const room={
 
 const socketIds = {};
 const rooms = {};
+
+
+app.use(cors({ origin: "http://localhost:3000" }));
 
 io.on('connection', (socket) => {
 	console.log('We have a new connection on '+socket.id);
