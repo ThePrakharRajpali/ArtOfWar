@@ -132,6 +132,50 @@ io.on('connection', (socket) => {
 
         io.to(socketIds[socket.id]).emit("newPieceAddedInfo", rooms[socketIds[socket.id]].roomState);
     });
+
+    socket.on("win", (data) => {
+        io.to(socketIds[socket.id]).emit("Ended", data);
+        clearInterval(intervals[socketIds[socket.id]]);
+
+        if(data===0 && rooms[socketIds[socket.id]].redScore < 180)  rooms[socketIds[socket.id]].redScore += 180;
+        if(data===1 && rooms[socketIds[socket.id]].blueScore < 180)  rooms[socketIds[socket.id]].blueScore += 180;
+
+    });
+
+    socket.on("ready", () => {
+        if(rooms[socketIds[socket.id]]===undefined) return;
+        if (rooms[socketIds[socket.id]].ready === undefined) {
+            rooms[socketIds[socket.id]].ready = 1;
+        } else if (
+            rooms[socketIds[socket.id]].ready === 1 &&
+            rooms[socketIds[socket.id]].limit === 2
+        ) {
+            rooms[socketIds[socket.id]].ready = 2;
+            rooms[socketIds[socket.id]].roomState.isSetup = false;
+            io.to(socketIds[socket.id]).emit("setupDone",rooms[socketIds[socket.id]].roomState);
+            intervals[socketIds[socket.id]] = setInterval(() => {
+                if (rooms[socketIds[socket.id]].roomState.blueTurn === true) {
+                    --timeintervals[socketIds[socket.id]].blue;
+                    if (timeintervals[socketIds[socket.id]].blue < 1) {
+                        io.to(socketIds[socket.id]).emit("Ended", 0);
+                        rooms[socketIds[socket.id]].roomState.redScore += 180;
+                        clearInterval(intervals[socketIds[socket.id]]);
+                    }
+                } else {
+                    --timeintervals[socketIds[socket.id]].red;
+                    if (timeintervals[socketIds[socket.id]].red < 1) {
+                        io.to(socketIds[socket.id]).emit("Ended", 1);
+                        rooms[socketIds[socket.id]].roomState.blueScore += 180;
+                        clearInterval(intervals[socketIds[socket.id]]);
+                    }
+                }
+                io.to(socketIds[socket.id]).emit(
+                    "timer",
+                    timeintervals[socketIds[socket.id]]
+                );
+            }, 1000);
+        }
+    });
 });
 
 app.use(router);
