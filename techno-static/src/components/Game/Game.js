@@ -129,7 +129,9 @@ class Board extends React.Component {
 		let square = this.state.squares[10*i+j];
 		let pieces = this.state.pieces;
 		let disp = null;
-		if(square.hasPiece === true) disp = pieces[square.pieceid.isBlue][square.pieceid.index].rank;
+		if(square.hasPiece === true && pieces[square.pieceid.isBlue][square.pieceid.index].rank===-1) disp = 'B';
+		else if(square.hasPiece === true && pieces[square.pieceid.isBlue][square.pieceid.index].rank===0) disp = 'F';
+		else if(square.hasPiece === true) disp = pieces[square.pieceid.isBlue][square.pieceid.index].rank;
 
 		let className;
 		if(square.isLake) className="squarelake";
@@ -216,6 +218,9 @@ class Board extends React.Component {
          else className="squareredoccupied bombR";
          className="squareredoccupied";
          disp=j-1;
+
+         if(j==0) disp = 'B';
+         if(j==1) disp = 'F';
 		} 
 
 		else{ 
@@ -233,6 +238,9 @@ class Board extends React.Component {
          else className="squareblueoccupied bombB";
          className="squareblueoccupied";
          disp=j-1;
+
+         if(j==0) disp = 'B';
+         if(j==1) disp = 'F';
 		} 
 			return (
 				<Square
