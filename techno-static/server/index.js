@@ -166,7 +166,16 @@ io.on('connection', (socket) => {
     socket.on("win", (data) => {
         io.to(socketIds[socket.id]).emit("Ended", data);
         clearInterval(intervals[socketIds[socket.id]]);
-
+        Match.findOne({ room: socketIds[socket.id]})
+            .exec()
+            .then((match) => {
+                match.winner = data;
+                match.redTime = timeintervals[socketIds[socket.id]].red;
+                match.blueTime = timeintervals[socketIds[socket.id]].blue;
+                match.redPoint = rooms[socketIds[socket.id]].roomState.redScore;
+                match.bluePoint = rooms[socketIds[socket.id]].roomState.blueScore;
+                match.save();
+            })
         if(data===0 && rooms[socketIds[socket.id]].redScore < 180)  rooms[socketIds[socket.id]].redScore += 180;
         if(data===1 && rooms[socketIds[socket.id]].blueScore < 180)  rooms[socketIds[socket.id]].blueScore += 180;
 
@@ -212,6 +221,3 @@ app.use(router);
 
 server.listen(PORT,() => console.log('Server has started on port',PORT));
 
-//TODO
-//Restrict opposite movement when not in turn (done)
-//
