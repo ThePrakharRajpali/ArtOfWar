@@ -348,564 +348,6 @@ background-image: url(assets/terrain/row-8-col-1.png);
 z-index: 0;
 background-size: cover;
 }
-.b1_1{
-background-image: url(assets/terrain/row-1-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b8_2{
-background-image: url(assets/terrain/row-8-col-2.png);
-z-index: 0;
-background-size: cover;
-}
-.b8_3{
-background-image: url(assets/terrain/row-8-col-3.png);
-z-index: 0;
-background-size: cover;
-}
-.b8_4{
-background-image: url(assets/terrain/row-8-col-4.png);
-z-index: 0;
-background-size: cover;
-}
-.b8_5{
-background-image: url(assets/terrain/row-8-col-5.png);
-z-index: 0;
-background-size: cover;
-}
-.b8_6{
-background-image: url(assets/terrain/row-8-col-6.png);
-z-index: 0;
-background-size: cover;
-}
-.b8_9{
-background-image: url(assets/terrain/row-8-col-9.png);
-z-index: 0;
-background-size: cover;
-}
-.b8_10{
-background-image: url(assets/terrain/row-8-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-.b9_1{
-background-image: url(assets/terrain/row-9-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b9_2{
-background-image: url(assets/terrain/row-9-col-2.png);
-z-index: 0;
-background-size: cover;
-}
-.b9_3{
-background-image: url(assets/terrain/row-9-col-3.png);
-z-index: 0;
-background-size: cover;
-}
-.b9_4{
-background-image: url(assets/terrain/row-9-col-4.png);
-z-index: 0;
-background-size: cover;
-}
-.b9_5{
-background-image: url(assets/terrain/row-9-col-5.png);
-z-index: 0;
-background-size: cover;
-}
-.b9_6{
-background-image: url(assets/terrain/row-9-col-6.png);
-z-index: 0;
-background-size: cover;
-}
-.b9_7{
-background-image: url(assets/terrain/row-9-col-7.png);
-z-index: 0;
-background-size: cover;
-}
-.b9_8{
-background-image: url(assets/terrain/row-9-col-8.png);
-z-index: 0;
-background-size: cover;
-}
-.b9_9{
-background-image: url(assets/terrain/row-9-col-9.png);
-z-index: 0;
-background-size: cover;
-}
-.b10_1{
-background-image: url(assets/terrain/row-10-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b10_2{
-background-image: url(assets/terrain/row-10-col-2.png);
-z-index: 0;
-background-size: cover;
-}
-.b10_3{
-background-image: url(assets/terrain/row-10-col-3.png);
-z-index: 0;
-background-size: cover;
-}
-.b10_4{
-background-image: url(assets/terrain/row-10-col-4.png);
-z-index: 0;
-background-size: cover;
-}
-.b10_5{
-background-image: url(assets/terrain/row-10-col-5.png);
-z-index: 0;
-background-size: cover;
-}
-.b10_6{
-background-image: url(assets/terrain/row-10-col-6.png);
-z-index: 0;
-background-size: cover;
-}
-.b10_7{
-background-image: url(assets/terrain/row-10-col-7.png);
-z-index: 0;
-background-size: cover;
-}
-.b10_8{
-background-image: url(assets/terrain/row-10-col-8.png);
-z-index: 0;
-background-size: cover;
-}
-.b10_9{
-background-image: url(assets/terrain/row-10-col-9.png);
-z-index: 0;
-background-size: cover;
-}
-.b10_10{
-background-image: url(assets/terrain/row-10-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-.b11_1{
-background-image: url(assets/terrain/row-11-col-1.png);
-z-index: 0;
-}
-.b11_2{
-background-image: url(assets/terrain/row-11-col-2.png);
-z-index: 0;
-background-size: cover;
-}
-.b11_3{
-background-image: url(assets/terrain/row-11-col-3.png);
-z-index: 0;
-background-size: cover;
-}
-.b11_4{
-background-image: url(assets/terrain/row-11-col-4.png);
-z-index: 0;
-background-size: cover;
-}
-.b11_5{
-background-image: url(assets/terrain/row-11-col-5.png);
-z-index: 0;
-background-size: cover;
-}
-.b11_6{
-background-image: url(assets/terrain/row-11-col-6.png);
-z-index: 0;
-background-size: cover;
-}
-.b11_7{
-background-image: url(assets/terrain/row-11-col-7.png);
-z-index: 0;
-background-size: cover;
-}
-.b11_8{
-background-image: url(assets/terrain/row-11-col-8.png);
-z-index: 0;
-background-size: cover;
-}
-.b11_9{
-background-image: url(assets/terrain/row-11-col-9.png);
-z-index: 0;
-background-size: cover;
-}
-.b11_10{
-background-image: url(assets/terrain/row-11-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-.b9_10{
-background-image: url(assets/terrain/row-9-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-.b12_1{
-background-image: url(assets/terrain/row-12-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b12_2{
-background-image: url(assets/terrain/row-12-col-2.png);
-z-index: 0;
-background-size: cover;
-}
-.b12_3{
-background-image: url(assets/terrain/row-12-col-3.png);
-z-index: 0;
-background-size: cover;
-}
-.b12_4{
-background-image: url(assets/terrain/row-12-col-4.png);
-z-index: 0;
-background-size: cover;
-}
-.b12_5{
-background-image: url(assets/terrain/row-12-col-5.png);
-z-index: 0;
-background-size: cover;
-}
-.b12_6{
-background-image: url(assets/terrain/row-12-col-6.png);
-z-index: 0;
-background-size: cover;
-}
-.b12_7{
-background-image: url(assets/terrain/row-12-col-7.png);
-z-index: 0;
-background-size: cover;
-}
-.b12_8{
-background-image: url(assets/terrain/row-12-col-8.png);
-z-index: 0;
-background-size: cover;
-}
-.b12_9{
-background-image: url(assets/terrain/row-12-col-9.png);
-z-index: 0;
-background-size: cover;
-}
-.b12_10{
-background-image: url(assets/terrain/row-12-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-
-
-.b1_1{
-background-image: url(assets/terrain/row-1-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b1_2{
-background-image: url(assets/terrain/row-1-col-2.png);
-z-index: 0;
-background-size: cover;
-background-size: cover;
-}
-.b1_3{
-background-image: url(assets/terrain/row-1-col-3.png);
-z-index: 0;
-background-size: cover;
-}
-.b1_4{
-background-image: url(assets/terrain/row-1-col-4.png);
-z-index: 0;
-background-size: cover;
-
-}
-.b1_5{
-background-image: url(assets/terrain/row-1-col-5.png);
-z-index: 0;
-}
-.b1_6{
-background-image: url(assets/terrain/row-1-col-6.png);
-z-index: 0;
-}
-.b1_7{
-background-image: url(assets/terrain/row-1-col-7.png);
-z-index: 0;
-}
-.b1_8{
-background-image: url(assets/terrain/row-1-col-8.png);
-z-index: 0;
-}
-.b1_9{
-background-image: url(assets/terrain/row-1-col-9.png);
-z-index: 0;
-}
-.b1_10{
-background-image: url(assets/terrain/row-1-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-.b2_1{
-background-image: url(assets/terrain/row-2-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b2_2{
-background-image: url(assets/terrain/row-2-col-2.png);
-z-index: 0;
-background-size: cover;
-}
-.b2_3{
-background-image: url(assets/terrain/row-2-col-3.png);
-z-index: 0;
-background-size: cover;
-}
-.b2_4{
-background-image: url(assets/terrain/row-2-col-4.png);
-z-index: 0;
-background-size: cover;
-}
-.b2_5{
-background-image: url(assets/terrain/row-2-col-5.png);
-z-index: 0;
-background-size: cover;
-}
-.b2_6{
-background-image: url(assets/terrain/row-2-col-6.png);
-z-index: 0;
-background-size: cover;
-}
-.b2_7{
-background-image: url(assets/terrain/row-2-col-7.png);
-z-index: 0;
-background-size: cover;
-}
-.b2_8{
-background-image: url(assets/terrain/row-2-col-8.png);
-z-index: 0;
-background-size: cover;
-}
-.b2_9{
-background-image: url(assets/terrain/row-2-col-9.png);
-z-index: 0;
-background-size: cover;
-}
-.b2_10{
-background-image: url(assets/terrain/row-2-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-.b3_1{
-background-image: url(assets/terrain/row-3-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b3_2{
-background-image: url(assets/terrain/row-3-col-2.png);
-z-index: 0;
-background-size: cover;
-}
-.b3_3{
-background-image: url(assets/terrain/row-3-col-3.png);
-z-index: 0;
-background-size: cover;
-}
-.b3_4{
-background-image: url(assets/terrain/row-3-col-4.png);
-z-index: 0;
-background-size: cover;
-}
-.b3_5{
-background-image: url(assets/terrain/row-3-col-5.png);
-z-index: 0;
-background-size: cover;
-}
-.b3_6{
-background-image: url(assets/terrain/row-3-col-6.png);
-z-index: 0;
-background-size: cover;
-}
-.b3_7{
-background-image: url(assets/terrain/row-3-col-7.png);
-background-size: cover;
-z-index: 0;
-}
-.b3_8{
-background-image: url(assets/terrain/row-3-col-8.png);
-z-index: 0;
-background-size: cover;
-}
-.b3_9{
-background-image: url(assets/terrain/row-3-col-9.png);
-z-index: 0;
-background-size: cover;
-}
-.b3_10{
-background-image: url(assets/terrain/row-3-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-.b4_1{
-background-image: url(assets/terrain/row-4-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b4_2{
-background-image: url(assets/terrain/row-4-col-2.png);
-z-index: 0;
-background-size: cover;
-}
-.b4_3{
-background-image: url(assets/terrain/row-4-col-3.png);
-z-index: 0;
-background-size: cover;
-}
-.b4_4{
-background-image: url(assets/terrain/row-4-col-4.png);
-z-index: 0;
-background-size: cover;
-}
-.b4_5{
-background-image: url(assets/terrain/row-4-col-5.png);
-z-index: 0;
-background-size: cover;
-}
-.b4_6{
-background-image: url(assets/terrain/row-4-col-6.png);
-z-index: 0;
-background-size: cover;
-}
-.b4_7{
-background-image: url(assets/terrain/row-4-col-7.png);
-z-index: 0;
-background-size: cover;
-}
-.b4_8{
-background-image: url(assets/terrain/row-4-col-8.png);
-z-index: 0;
-background-size: cover;
-}
-.b4_9{
-background-image: url(assets/terrain/row-4-col-9.png);
-z-index: 0;
-background-size: cover;
-}
-.b4_10{
-background-image: url(assets/terrain/row-4-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-.b5_1{
-background-image: url(assets/terrain/row-5-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b5_2{
-background-image: url(assets/terrain/row-5-col-2.png);
-z-index: 0;
-background-size: cover;
-}
-.b5_10{
-background-image: url(assets/terrain/row-5-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-.b6_1{
-background-image: url(assets/terrain/row-6-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b5_5{
-background-image: url(assets/terrain/row-5-col-5.png);
-z-index: 0;
-background-size: cover;
-}
-.b5_6{
-background-image: url(assets/terrain/row-5-col-6.png);
-z-index: 0;
-background-size: cover;
-}
-.b5_7{
-background-image: url(assets/terrain/row-5-col-7.png);
-z-index: 0;
-background-size: cover;
-}
-.b5_8{
-background-image: url(assets/terrain/row-5-col-8.png);
-z-index: 0;
-background-size: cover;
-}
-.b5_9{
-background-image: url(assets/terrain/row-5-col-9.png);
-z-index: 0;
-background-size: cover;
-}
-.b6_2{
-background-image: url(assets/terrain/row-6-col-2.png);
-z-index: 0;
-background-size: cover;
-}
-.b6_9{
-background-image: url(assets/terrain/row-6-col-9.png);
-z-index: 0;
-background-size: cover;
-}
-.b6_10{
-background-image: url(assets/terrain/row-6-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-.b6_5{
-background-image: url(assets/terrain/row-6-col-5.png);
-z-index: 0;
-background-size: cover;
-}
-.b6_6{
-background-image: url(assets/terrain/row-6-col-6.png);
-z-index: 0;
-background-size: cover;
-}
-.b6_8{
-background-image: url(assets/terrain/row-6-col-8.png);
-z-index: 0;
-background-size: cover;
-}
-.b7_1{
-background-image: url(assets/terrain/row-7-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b7_2{
-background-image: url(assets/terrain/row-7-col-2.png);
-z-index: 0;
-background-size: cover;
-}
-.b7_3{
-background-image: url(assets/terrain/row-7-col-3.png);
-z-index: 0;
-background-size: cover;
-}
-.b7_5{
-background-image: url(assets/terrain/row-7-col-5.png);
-z-index: 0;
-background-size: cover;
-}
-.b7_6{
-background-image: url(assets/terrain/row-7-col-6.png);
-z-index: 0;
-background-size: cover;
-}
-.b7_9{
-background-image: url(assets/terrain/row-7-col-9.png);
-z-index: 0;
-background-size: cover;
-}
-.b7_10{
-background-image: url(assets/terrain/row-7-col-10.png);
-z-index: 0;
-background-size: cover;
-}
-.b8_1{
-background-image: url(assets/terrain/row-8-col-1.png);
-z-index: 0;
-background-size: cover;
-}
-.b1_1{
-background-image: url(assets/terrain/row-1-col-1.png);
-z-index: 0;
-background-size: cover;
-}
 .b8_2{
 background-image: url(assets/terrain/row-8-col-2.png);
 z-index: 0;
@@ -1259,37 +701,37 @@ background-size: cover;
   z-index: 1;
 }
 .spyB{
-  background-image: url(assets/armying/B_1.jpg);
+  background-image: url(assets/armying/B_1.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .scoutB{
-  background-image: url(assets/armying/B_2.jpg);
+  background-image: url(assets/armying/B_2.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .minerB{
-  background-image: url(assets/armying/B_3.jpg);
+  background-image: url(assets/armying/B_3.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .sergeantB{
-  background-image: url(assets/armying/B_4.jpg);
+  background-image: url(assets/armying/B_4.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .lieutenantB{
-  background-image: url(assets/armying/B_5.jpg);
+  background-image: url(assets/armying/B_5.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .captainB{
-  background-image: url(assets/armying/B_6.jpg);
+  background-image: url(assets/armying/B_6.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
@@ -1301,7 +743,7 @@ background-size: cover;
   z-index: 1;
 }
 .colonelB{
-  background-image: url(assets/armying/B_8.jpg);
+  background-image: url(assets/armying/B_8.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
@@ -1313,7 +755,7 @@ background-size: cover;
   z-index: 1;
 }
 .marshalB{
-  background-image: url(assets/armying/B_10.jpeg);
+  background-image: url(assets/armying/B_10.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
@@ -1331,25 +773,25 @@ background-size: cover;
   z-index: 1;
 }
 .spyR{
-  background-image: url(assets/armying/R_1.jpg);
+  background-image: url(assets/armying/R_1.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .scoutR{
-  background-image: url(assets/armying/R_2.jpg);
+  background-image: url(assets/armying/R_2.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .minerR{
-  background-image: url(assets/armying/R_3.jpg);
+  background-image: url(assets/armying/R_3.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .sergeantR{
-  background-image: url(assets/armying/R_4.jpg);
+  background-image: url(assets/armying/R_4.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
@@ -1361,31 +803,31 @@ background-size: cover;
   z-index: 1;
 }
 .captainR{
-  background-image: url(assets/armying/R_6.jpeg);
+  background-image: url(assets/armying/R_6.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .majorR{
-  background-image: url(assets/armying/R_7.jpg);
+  background-image: url(assets/armying/R_7.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .colonelR{
-  background-image: url(assets/armying/R_8.jpg);
+  background-image: url(assets/armying/R_8.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .generalR{
-  background-image: url(assets/armying/R_9.jpeg);
+  background-image: url(assets/armying/R_9.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
 }
 .marshalR{
-  background-image: url(assets/armying/R_10.jpg);
+  background-image: url(assets/armying/R_10.png);
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 1;
@@ -1429,4 +871,15 @@ background-size: cover;
 .b8_8{
   margin: -1px;
   border-width: 0px 5px 5px 0px;
+}
+.hideR{
+  background-image: url(assets/armying/red.png);
+  border:1px solid black ;
+  background-size: cover;
+}
+.hideB
+{
+background-image: url(assets/armying/blue.png);
+border:1px solid black ;
+background-size: cover;
 }
