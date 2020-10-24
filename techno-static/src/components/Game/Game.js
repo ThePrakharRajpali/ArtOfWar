@@ -57,8 +57,6 @@ class Board extends React.Component {
 			blueTurn: false,
 			redScore: 0,
 			blueScore: 0,
-			name:"",
-			room:"",
 			clickMask: false,
 			redTime: 60*20,
 			blueTime: 60*20,
@@ -72,7 +70,9 @@ class Board extends React.Component {
 		//const name = this.props.location.state.name;
 		const room = this.props.location.state.roomid;
 		const name = this.props.location.state.name;
-		this.socket.emit('join',{room, name});
+		console.log("roomid is: " + room);
+		console.log("player is: " + name);
+		this.socket.emit('join',{data: room, rollno: name});
 
 		this.socket.emit('disconnect',function(){
 			console.log("bye bye!!");				
@@ -761,6 +761,8 @@ class Board extends React.Component {
 			redScore: redScore,
 			squares: newSquares,
 			pieces: newPieces,
+			room: this.state.room,
+			name: this.state.name,
 		};
 
 		this.socket.emit("moved", toSend);
