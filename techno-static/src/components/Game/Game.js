@@ -437,7 +437,7 @@ class Board extends React.Component {
 					numBlue: blueCount,
 				};
 
-				this.socket.emit("newPieceAdd", this.state);
+				this.socket.emit("newPieceAdd", toSend);
 
 				this.setState({
 					squares: newSquares,
