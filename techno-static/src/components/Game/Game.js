@@ -495,8 +495,8 @@ class Board extends React.Component {
 				pieces: newPieces,
 				initialBluePiece: this.state.initialBluePiece,
 				initialRedPiece: this.state.initialRedPiece,
-				numRed: this.state.redCount,
-				numBlue: this.state.blueCount,
+				numRed: this.state.numRed,
+				numBlue: this.state.numBlue,
 			};
 
 			this.socket.emit("newPieceAdd", toSend);
@@ -863,7 +863,7 @@ class Board extends React.Component {
 						
 						
 					</span>
-					<div classname="show-content bg-success text-white">
+					<div className="show-content bg-success text-white">
 						<div className="row justify-content-between text-center">
 							<div className="col-4"><h4>Opponent's Score: {this.state.redScore}</h4></div> <div className="col-4">{turnDetails}</div> <div className="col-2 col-md-4"><h4>Your Score: {this.state.blueScore}</h4></div>
 						</div>
@@ -872,7 +872,7 @@ class Board extends React.Component {
 							<div className="col-2">
 								{timerPanelRed}
 							</div>
-							<div classname="col-2">
+							<div className="col-2">
 								{timerPanelBlue}
 							</div>
 							<div className="col-2"></div>
@@ -928,7 +928,7 @@ class Board extends React.Component {
   						</Navbar>
 						
 					</span>
-					<div classname="show-content bg-success text-white">
+					<div className="show-content bg-success text-white">
 						<div className="row justify-content-between text-center">
 							<div className="col-4"><h4>Opponent's Score: {this.state.blueScore}</h4></div> <div className="col-4">{turnDetails}</div> <div className="col-2 col-md-4"><h4>Your Score: {this.state.redScore}</h4></div>
 						</div>
@@ -938,7 +938,7 @@ class Board extends React.Component {
 							<div className="col-2">
 								{timerPanelBlue}
 							</div>
-							<div classname="col-2">
+							<div className="col-2">
 								{timerPanelRed}
 							</div>
 							<div className="col-2"></div>
@@ -990,6 +990,8 @@ class Board extends React.Component {
 
 	readyClick(){
 		if(!this.state.clickMask){
+			console.log(this.state.numBlue);
+			console.log(this.state.numRed);
 			if(this.state.isPlayerBlue){
 				if(this.state.numBlue<40) alert('Place all pieces first.');
 				else {
