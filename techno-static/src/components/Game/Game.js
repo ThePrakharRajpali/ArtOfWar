@@ -57,8 +57,6 @@ class Board extends React.Component {
 			blueTurn: false,
 			redScore: 0,
 			blueScore: 0,
-			name:"",
-			room:"",
 			clickMask: false,
 			redTime: 60*20,
 			blueTime: 60*20,
@@ -149,10 +147,10 @@ class Board extends React.Component {
         	console.log(data);
         	if(this.state.isPlayerBlue==data) alert("Congratulations, You won!!");
             else alert("you lost :( better luck next time");
-            this.state.ended=1;
-            console.log(this.state)
+            
             this.setState({
-               isGameOn: false,
+			   isGameOn: false,
+			   ended: 1,
             });
 
             if(this.state.blueScore<180 && this.state.redScore<180){
@@ -830,8 +828,8 @@ class Board extends React.Component {
 		if(this.state.isSetup) readyButton = <button className="btn btn-success" onClick={()=>this.readyClick()}>Ready</button>;
 
 		if(!this.state.isSetup){
-			timerPanelRed = <p className = "badge badge-danger" >Red is left with <p>{this.state.redTime}</p></p>;
-			timerPanelBlue = <p className = "badge badge-primary">Blue is left with <p>{this.state.blueTime}</p></p>;
+			timerPanelRed = <p className = "bg-danger" >Red is left with <p>{this.state.redTime}</p></p>;
+			timerPanelBlue = <p className = "bg-primary">Blue is left with <p>{this.state.blueTime}</p></p>;
 		}	
 
 		if(this.state.isGameOn) resignButton = <button className="btn btn-danger" onClick={()=>this.resignClick()}>Resign</button>
@@ -863,7 +861,7 @@ class Board extends React.Component {
 						
 						
 					</span>
-					<div classname="show-content bg-success text-white">
+					<div className="show-content bg-success text-white">
 						<div className="row justify-content-between text-center">
 							<div className="col-4"><h4>Opponent's Score: {this.state.redScore}</h4></div> <div className="col-4">{turnDetails}</div> <div className="col-2 col-md-4"><h4>Your Score: {this.state.blueScore}</h4></div>
 						</div>
@@ -872,13 +870,18 @@ class Board extends React.Component {
 							<div className="col-2">
 								{timerPanelRed}
 							</div>
-							<div classname="col-2">
+							<div className="col-2">
 								{timerPanelBlue}
 							</div>
 							<div className="col-2"></div>
 						</div>
-						<div className="text-center">
-							<h5>You joined room {this.state.room}</h5>
+						<div className="text-center row justify-content-between">
+							<div className="col-4">
+								<h5>You joined room {this.state.room}</h5>
+							</div>
+							<div className="col-4">
+								<h5>You are Blue</h5>
+							</div>
 						</div>
 					</div>
 					<div className='table'>
@@ -928,7 +931,7 @@ class Board extends React.Component {
   						</Navbar>
 						
 					</span>
-					<div classname="show-content bg-success text-white">
+					<div className="show-content bg-success text-white">
 						<div className="row justify-content-between text-center">
 							<div className="col-4"><h4>Opponent's Score: {this.state.blueScore}</h4></div> <div className="col-4">{turnDetails}</div> <div className="col-2 col-md-4"><h4>Your Score: {this.state.redScore}</h4></div>
 						</div>
@@ -938,13 +941,18 @@ class Board extends React.Component {
 							<div className="col-2">
 								{timerPanelBlue}
 							</div>
-							<div classname="col-2">
+							<div className="col-2">
 								{timerPanelRed}
 							</div>
 							<div className="col-2"></div>
 						</div>
-						<div className="text-center">
-							<h5>You joined room {this.state.room}</h5>
+						<div className="text-center row justify-content-between">
+							<div className="col-4">
+								<h5>You joined room {this.state.room}</h5>
+							</div>
+							<div className="col-4">
+								<h5>You are Blue</h5>
+							</div>
 						</div>
 					</div>
 					<div className='table'>
@@ -981,6 +989,7 @@ class Board extends React.Component {
 		}
 
 	}
+
 	resignClick(){
 		
 		if(window.confirm("Are you sure you want to give up?")){
@@ -989,8 +998,13 @@ class Board extends React.Component {
 	}
 
 	readyClick(){
+
+		console.log("bluePece " + this.state.numBlue);
+		console.log("redPiece " + this.state.numRed);
+
 		if(!this.state.clickMask){
 			if(this.state.isPlayerBlue){
+				
 				if(this.state.numBlue<40) alert('Place all pieces first.');
 				else {
 					this.socket.emit("ready",function(){
@@ -1128,9 +1142,69 @@ function Help() {
   
 		<Modal show={show} onHide={handleClose}>
 		  <Modal.Header closeButton>
-			<Modal.Title>Modal heading</Modal.Title>
+			<Modal.Title> Art Of War </Modal.Title>
 		  </Modal.Header>
-		  <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+		  <Modal.Body>
+				<h3> Objective </h3>
+				<p>Capture the flag of opposing team</p>
+
+				<h3>Pieces</h3>
+				<p>
+					You have 33 movable pieces. 
+					<br></br>
+					Each piece has a rank which is the number on it. 
+					<br></br>
+					You have 1 flag and 6 bomb, which are not movable. 
+					<br></br>
+					This makes a total of 40 pieces.
+				</p>
+
+				<h3>Board</h3>
+				<p>Board is 12 x 10 rectangular grid. There are two lakes in middle. Your piece cannot move on lake.</p>
+
+				<h3>Gameplay</h3>
+				<uL>
+					<li>Arrange Your Pieces On board by clicking on panel and then clicking board. You can arrange in only first 4 rows. You can interchange pieces on board by clicking them and swapping them.<br></br> Note: you can rearrange the pieces only before clicking ready.</li>
+					<li>The way your opponent arranged his/her pieces is hidden to you..</li>
+					<li>Once you and your opponent are both ready, the game will start. The timer will start running. Both player will be given twenty minutes each.</li>
+					<li>For moving pieces, you can click on it and move to any one of the green highlighted pieces in 4 directions.</li>
+					<li>On clicking your piece, if there is an opponent piece in neighbouring squares, it will be highlighted purple. You can click on purple square to attack on opponent's piece.</li>
+					<li>If you capture opponents flag or your opponent's timer runs out or if opponent resigns, you win.</li>
+				</uL>
+
+				<h3>Movement And Attacking</h3>
+				<p>
+					A piece can move to any of its neighbouring squares in one of the four directions, if they are free. These squares will be highlighted.
+					<br></br>
+					If piece(attacking piece) has opponent's piece(defending piece) in neighbouring square, it can attack it. Piece with higher rank wins and losing piece is removed from the board. Winning piece will placed on defending piece's square.
+					<br></br>
+					In case there is a tie, both pieces will die.
+					<br></br>
+					Spy(rank 1 or S) and Bomb have special privileges. 
+					<br></br>
+					<strong>Spy : </strong> it is a special piece. It is of lowest rank in movable pieces. BUT, if it attacks any piece(apart from bomb), it will always win. But if any other piece attack on Spy, Spy will always lose.
+					<br></br>
+					<strong>Bomb : </strong> it is an immovable piece. Its position is fixed from the start of the game. If any piece(including Spy) <stong> (except rank "3") </stong> attacks on Bomb, it will blast in 3 x 3 squares around it. Any enemy piece(s) in the radius will die. The bomb will also die/removed. If Rank 3 attacks Bomb, Bomb will die.
+					<br></br>
+					<strong>Flag : </strong> it is immovable but most important piece. If you lose flag , you lose the match. (HINTS for defending: You can keep your flag at edges or corners and surround it with bombs and maybe a high ranking piece.)
+				</p>
+
+				<h3>Points and Scoring</h3>
+				<ul>
+					<li>For each piece you capture, you will get points equal to its rank. For eg. : if you capture a piece of rank 8, you will get 8 points.</li>
+					<li>In case of tie, you won't get any points.</li>
+					<li>For each bomb you diffuse(attacking a bomb with rank 3), you will get 5 points.</li>
+					<li>If you cature a spy, you will get points equal to rank of piece you captured it with. For eg. : if you capture a spy using rank 6 piece, you will get 6 points.</li>
+					<li>If you win the match, you will get 180 points.</li>
+				</ul>
+
+				<h3>Important :</h3>
+				<p><strong>Never Refresh/reload page or go back a page.</strong></p>
+				<p>Ask one of the event coordinators for any technical queries</p>
+				<p>If your internet cutoff due to some reason, immediately contact one of the coordinators.</p>
+				<p>Use latest version of chrome in Desktop/Laptop. If not possible, use chrome app in desktop mode in mobile phones.</p>
+
+		  </Modal.Body>
 		  <Modal.Footer>
 			<Button variant="secondary" onClick={handleClose}>
 			  Close
