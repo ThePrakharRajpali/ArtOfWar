@@ -437,7 +437,7 @@ class Board extends React.Component {
 					numBlue: blueCount,
 				};
 
-				this.socket.emit("newPieceAdd", toSend);
+				this.socket.emit("newPieceAdd", this.state);
 
 				this.setState({
 					squares: newSquares,
@@ -877,6 +877,9 @@ class Board extends React.Component {
 							</div>
 							<div className="col-2"></div>
 						</div>
+						<div className="text-center">
+							<h5>You joined room {this.state.room}</h5>
+						</div>
 					</div>
 					<div className='table'>
 					
@@ -940,6 +943,9 @@ class Board extends React.Component {
 							</div>
 							<div className="col-2"></div>
 						</div>
+						<div className="text-center">
+							<h5>You joined room {this.state.room}</h5>
+						</div>
 					</div>
 					<div className='table'>
 					<span className="">
@@ -976,12 +982,9 @@ class Board extends React.Component {
 
 	}
 	resignClick(){
-		var quit = prompt("Type: RESIGN to end match");
-		if(quit.toUpperCase() === "RESIGN"){
+		
+		if(window.confirm("Are you sure you want to give up?")){
 			this.socket.emit("win", this.state.isPlayerBlue?0:1);
-		} else {
-			alert("You could not resign");
-			return;
 		}
 	}
 

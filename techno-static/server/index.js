@@ -46,7 +46,7 @@ const initState = {
 const room = {
     red:"id",
     blue:"id",
-    roomState: "initState",
+    roomState: initState,
     limit:1,
 }
 
@@ -68,8 +68,8 @@ io.on('connection', (socket) => {
         rooms[socketIds[socket.id]].roomState.redScore = data.redScore;
         rooms[socketIds[socket.id]].roomState.isGameOn = data.isGameOn;
         rooms[socketIds[socket.id]].roomState.blueTurn = data.turn;
-
-        Match.find({ room: data.room}).then(match => {
+        console.log(data.room);
+        Match.find({ room: data.room}).then((match) => {
             match.bluePoint = data.blueScore;
             match.redPoint = data.redScore;
             match.save();
@@ -83,15 +83,29 @@ io.on('connection', (socket) => {
         console.log(dict.data);
 
         if (rooms[data] === undefined || rooms[data].limit < 2) {
+            socketIds[socket.id] = data;
+            socket.join(data);
 
-            if (rooms[dict.data] === undefined) {
-                rooms[dict.data] = {};
-                rooms[dict.data].red = socket.id;
-                rooms[dict.data].limit = 1;
-                rooms[dict.data].roomState = initState;
-                timeintervals[dict.data] = {}
-                timeintervals[dict.data].red = maxTime;
-                timeintervals[dict.data].blue = maxTime;
+            if (rooms[data] === undefined) {
+                rooms[data] = {};
+                rooms[data].red = socket.id;
+                rooms[data].limit = 1;
+                rooms[data].roomState = {
+                    squares: makearray(),
+                    pieces: makepieces(),
+                    blueScore: 0,
+                    redScore: 0,
+                    isGameOn: true,
+                    blueTurn: false,
+                    isSetup: true,
+                    numBlue: 0,
+                    numRed: 0,
+                    initialRedPiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
+                    initialBluePiece: [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1],
+                };
+                timeintervals[data] = {}
+                timeintervals[data].red = maxTime;
+                timeintervals[data].blue = maxTime;
                 socket.emit("roomid", { roomid: data, isPlayerBlue: false, roomState: rooms[data].roomState});
                 console.log("room created at " + data);
 
@@ -118,6 +132,7 @@ io.on('connection', (socket) => {
                 if (rooms[data].red === undefined) {
                     Match.findOne({ room: data }).then((match) => {
                         if(match.winner !== undefined) return;
+
                         if(match.userRed === rollno){
                             rooms[data].red = socket.id;
                             rooms[data].limit += 1;
@@ -133,7 +148,7 @@ io.on('connection', (socket) => {
                         }
                     })
                     .catch(err => console.log(err))   
-                } else {
+                } else if(rooms[data].blue === undefined){
                     Match.findOne({room: data}).then((match) => {
                         rooms[data].blue = socket.id;
                         rooms[data].limit += 1;
@@ -146,8 +161,7 @@ io.on('connection', (socket) => {
                     
                 }
             }
-            socketIds[socket.id] = data;
-            socket.join(data);
+            
         }
     });
 

@@ -13,7 +13,7 @@ const matchSchema = mongoose.Schema({
     },
 
     room:{
-        type:Number,
+        type:String,
     },
 
     redPoint: {
