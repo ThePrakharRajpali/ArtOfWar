@@ -68,7 +68,6 @@ io.on('connection', (socket) => {
         rooms[socketIds[socket.id]].roomState.redScore = data.redScore;
         rooms[socketIds[socket.id]].roomState.isGameOn = data.isGameOn;
         rooms[socketIds[socket.id]].roomState.blueTurn = data.turn;
-        console.log(data.room);
         Match.findOne({ room: data.room}).then((match) => {
             match.redTime = timeintervals[socketIds[socket.id]].red;
             match.blueTime = timeintervals[socketIds[socket.id]].blue;

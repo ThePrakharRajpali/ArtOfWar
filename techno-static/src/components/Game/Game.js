@@ -493,8 +493,8 @@ class Board extends React.Component {
 				pieces: newPieces,
 				initialBluePiece: this.state.initialBluePiece,
 				initialRedPiece: this.state.initialRedPiece,
-				numRed: this.state.redCount,
-				numBlue: this.state.blueCount,
+				numRed: this.state.numRed,
+				numBlue: this.state.numBlue,
 			};
 
 			this.socket.emit("newPieceAdd", toSend);
@@ -1003,6 +1003,8 @@ class Board extends React.Component {
 		console.log("redPiece " + this.state.numRed);
 
 		if(!this.state.clickMask){
+			console.log(this.state.numBlue);
+			console.log(this.state.numRed);
 			if(this.state.isPlayerBlue){
 				
 				if(this.state.numBlue<40) alert('Place all pieces first.');
