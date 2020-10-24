@@ -951,7 +951,7 @@ class Board extends React.Component {
 								<h5>You joined room {this.state.room}</h5>
 							</div>
 							<div className="col-4">
-								<h5>You are Blue</h5>
+								<h5>You are Red</h5>
 							</div>
 						</div>
 					</div>
