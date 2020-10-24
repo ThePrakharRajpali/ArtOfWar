@@ -62,6 +62,8 @@ class Board extends React.Component {
 			clickMask: false,
 			redTime: 60*20,
 			blueTime: 60*20,
+			room: this.props.location.state.roomid,
+			name: this.props.location.state.name,
 		};
 		this.socket = io(ENDPOINT);
 	}
@@ -69,8 +71,8 @@ class Board extends React.Component {
 	componentDidMount(){
 		//const name = this.props.location.state.name;
 		const room = this.props.location.state.roomid;
-
-		this.socket.emit('join',room);
+		const name = this.props.location.state.name;
+		this.socket.emit('join',{room, name});
 
 		this.socket.emit('disconnect',function(){
 			console.log("bye bye!!");				
@@ -87,10 +89,11 @@ class Board extends React.Component {
 				blueTurn: roomState.blueTurn,
 				isSetup: roomState.isSetup,
 				numBlue: roomState.numBlue,
-				numRed: roomState.numRed,
+				numRed:  roomState.numRed,
 				initialRedPiece: roomState.initialRedPiece,
 				initialBluePiece: roomState.initialBluePiece,
 			});	
+			console.log("Roomid given");
 		});
 
 		this.socket.on("move", (data) => {
