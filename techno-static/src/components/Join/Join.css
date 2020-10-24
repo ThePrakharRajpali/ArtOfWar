@@ -14,11 +14,13 @@ html, body {
   
   .joinOuterContainer {
     display: flex;
+    flex-direction:column;
     justify-content: center;
     text-align: center;
     height: 100vh;
     align-items: center;
     background-color: #1A1A1D;
+    
   }
   
   .joinInnerContainer {
@@ -26,7 +28,7 @@ html, body {
   }
   
   .joinInput {
-    border-radius: 0;
+    border-radius: 5px;
     padding: 15px 20px;
     width: 100%;
   }
