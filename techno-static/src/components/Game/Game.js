@@ -1152,7 +1152,7 @@ const popover = (
   
   const TechnoLogo = () => (
 	<OverlayTrigger trigger="click" placement="right" overlay={popover}>
-		<img src={logo} alt='technologo'></img>
+		<a href='#'><img src={logo} alt='technologo'></img></a>
 	  {/* <Button variant="success">Click</Button> */}
 	</OverlayTrigger>
   );
