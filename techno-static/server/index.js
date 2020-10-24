@@ -69,23 +69,29 @@ io.on('connection', (socket) => {
         rooms[socketIds[socket.id]].roomState.isGameOn = data.isGameOn;
         rooms[socketIds[socket.id]].roomState.blueTurn = data.turn;
 
-
+        Match.find({ room: data.room}).then(match => {
+            match.bluePoint = data.blueScore;
+            match.redPoint = data.redScore;
+            match.save();
+        }).catch(err => console.log(err))
         io.to(socketIds[socket.id]).emit("move", rooms[socketIds[socket.id]].roomState);
     });
 
-	socket.on("join", ({data, rollno}) => {
+	socket.on("join", (dict) => {
+        var data = dict.data;
+        var rollno = dict.rollno;
+        console.log(dict.data);
+
         if (rooms[data] === undefined || rooms[data].limit < 2) {
 
-            console.log(data);
-
-            if (rooms[data] === undefined) {
-                rooms[data] = {};
-                rooms[data].red = socket.id;
-                rooms[data].limit = 1;
-                rooms[data].roomState = initState;
-                timeintervals[data]={}
-                timeintervals[data].red=maxTime;
-                timeintervals[data].blue=maxTime;
+            if (rooms[dict.data] === undefined) {
+                rooms[dict.data] = {};
+                rooms[dict.data].red = socket.id;
+                rooms[dict.data].limit = 1;
+                rooms[dict.data].roomState = initState;
+                timeintervals[dict.data] = {}
+                timeintervals[dict.data].red = maxTime;
+                timeintervals[dict.data].blue = maxTime;
                 socket.emit("roomid", { roomid: data, isPlayerBlue: false, roomState: rooms[data].roomState});
                 console.log("room created at " + data);
 
@@ -183,6 +189,7 @@ io.on('connection', (socket) => {
                 match.blueTime = timeintervals[socketIds[socket.id]].blue;
                 match.redPoint = rooms[socketIds[socket.id]].roomState.redScore;
                 match.bluePoint = rooms[socketIds[socket.id]].roomState.blueScore;
+                match.save();
             })
             .catch((err) => {
                 console.error(err);
@@ -196,6 +203,7 @@ io.on('connection', (socket) => {
 
     socket.on("ready", () => {
         if(rooms[socketIds[socket.id]]===undefined) return;
+
         if (rooms[socketIds[socket.id]].ready === undefined) {
             rooms[socketIds[socket.id]].ready = 1;
         } else if (
@@ -215,11 +223,12 @@ io.on('connection', (socket) => {
                         Match.findOne({room: socketIds[socket.id]})
                             .exec()
                             .then((match) => {
-//////////////////////////////////                                //match.winner = ;
+                                match.winner = 0;
                                 match.redTime = timeintervals[socketIds[socket.id]].red;
                                 match.blueTime = timeintervals[socketIds[socket.id]].blue;
                                 match.redPoint = rooms[socketIds[socket.id]].roomState.redScore;
                                 match.bluePoint = rooms[socketIds[socket.id]].roomState.blueScore;
+                                match.save();
                             })
                             .catch((err) => {
                                 console.error(err);
@@ -235,11 +244,12 @@ io.on('connection', (socket) => {
                         Match.findOne({room: socketIds[socket.id]})
                             .exec()
                             .then((match) => {
-//////////////////////////////////                                //match.winner = ;
+                                match.winner = 1;
                                 match.redTime = timeintervals[socketIds[socket.id]].red;
                                 match.blueTime = timeintervals[socketIds[socket.id]].blue;
                                 match.redPoint = rooms[socketIds[socket.id]].roomState.redScore;
                                 match.bluePoint = rooms[socketIds[socket.id]].roomState.blueScore;
+                                match.save();
                             })
                             .catch((err) => {
                                 console.error(err);
