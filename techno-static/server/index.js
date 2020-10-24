@@ -26,7 +26,7 @@ const Match = require("./match");
 // const { match } = require('assert');
 
 
-const maxTime = 20*60;
+const maxTime = 2*60;
 
 
 const initState = {
