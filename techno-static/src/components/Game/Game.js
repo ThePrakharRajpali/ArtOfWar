@@ -863,17 +863,19 @@ class Board extends React.Component {
 						
 						
 					</span>
-					<div classname="show-content">
-						{turnDetails}
+					<div classname="show-content bg-success text-white">
+						<div className="row justify-content-between text-center">
+							<div className="col-4"><h4>Opponent's Score: {this.state.redScore}</h4></div> <div className="col-4">{turnDetails}</div> <div className="col-2 col-md-4"><h4>Your Score: {this.state.blueScore}</h4></div>
+						</div>
 						<div className="row justify-content-between">
-							<div className="col-6"><h3>Opponent's Score: {this.state.redScore}</h3></div>  <div className="col-2"><h3>Your Score: {this.state.blueScore}</h3></div>
-						
+							<div className="col-2"></div>
 							<div className="col-2">
 								{timerPanelRed}
 							</div>
 							<div classname="col-2">
 								{timerPanelBlue}
 							</div>
+							<div className="col-2"></div>
 						</div>
 					</div>
 					<div className='table'>
@@ -923,17 +925,20 @@ class Board extends React.Component {
   						</Navbar>
 						
 					</span>
-					<div classname="show-content">
-						{turnDetails}
+					<div classname="show-content bg-success text-white">
+						<div className="row justify-content-between text-center">
+							<div className="col-4"><h4>Opponent's Score: {this.state.blueScore}</h4></div> <div className="col-4">{turnDetails}</div> <div className="col-2 col-md-4"><h4>Your Score: {this.state.redScore}</h4></div>
+						</div>
+
 						<div className="row justify-content-between">
-							<div className="col-6"><h3>Opponent's Score: {this.state.redScore}</h3></div>  <div className="col-2 align-item-right"><h3>Your Score: {this.state.blueScore}</h3></div>
-						
+							<div className="col-2"></div>
 							<div className="col-2">
-								{timerPanelRed}
-							</div>
-							<div classname="col-2">
 								{timerPanelBlue}
 							</div>
+							<div classname="col-2">
+								{timerPanelRed}
+							</div>
+							<div className="col-2"></div>
 						</div>
 					</div>
 					<div className='table'>
