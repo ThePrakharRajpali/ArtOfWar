@@ -68,10 +68,11 @@ io.on('connection', (socket) => {
         rooms[socketIds[socket.id]].roomState.redScore = data.redScore;
         rooms[socketIds[socket.id]].roomState.isGameOn = data.isGameOn;
         rooms[socketIds[socket.id]].roomState.blueTurn = data.turn;
-        console.log(data.room);
-        Match.find({ room: data.room}).then((match) => {
-            match.bluePoint = data.blueScore;
-            match.redPoint = data.redScore;
+        Match.findOne({ room: data.room}).then((match) => {
+            match.redTime = timeintervals[socketIds[socket.id]].red;
+            match.blueTime = timeintervals[socketIds[socket.id]].blue;
+            match.redPoint = rooms[socketIds[socket.id]].roomState.redScore;
+            match.bluePoint = rooms[socketIds[socket.id]].roomState.blueScore;
             match.save();
         }).catch(err => console.log(err))
         io.to(socketIds[socket.id]).emit("move", rooms[socketIds[socket.id]].roomState);
