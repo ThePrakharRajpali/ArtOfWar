@@ -883,3 +883,8 @@ background-image: url(assets/armying/blue.png);
 border:1px solid black ;
 background-size: cover;
 }
+
+
+.show-content{
+  background-color: #495159;
+}

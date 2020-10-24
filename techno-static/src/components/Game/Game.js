@@ -57,6 +57,8 @@ class Board extends React.Component {
 			blueTurn: false,
 			redScore: 0,
 			blueScore: 0,
+			name:"",
+			room:"",
 			clickMask: false,
 			redTime: 60*20,
 			blueTime: 60*20,
@@ -190,7 +192,7 @@ class Board extends React.Component {
          else if(disp===8) className="squareblueoccupied colonelB"; 
          else if(disp===9) className="squareblueoccupied generalB";
          else if(disp===10) className="squareblueoccupied marshalB";
-         else if(disp===0) className="squareblueoccupied flagB";
+         else if(disp==='F') className="squareblueoccupied flagB";
          else className="squareblueoccupied bombB";
 		}
 		else {
@@ -204,7 +206,7 @@ class Board extends React.Component {
          else if(disp===8) className="squareredoccupied colonelR";
          else if(disp===9) className="squareredoccupied generalR";
          else if(disp===10) className="squareredoccupied marshalR";
-         else if(disp===0) className="squareredoccupied flagR";
+         else if(disp==='F') className="squareredoccupied flagR";
          else className="squareredoccupied bombR";
 		}
 		if(disp!==null && square.pieceid.isBlue!=this.state.isPlayerBlue){
@@ -818,20 +820,35 @@ class Board extends React.Component {
 		let resignButton = null;
 		let timerPanelRed = null;
 		let timerPanelBlue = null;
+		let turnDetails = null;
 
 		if(this.state.isSetup){
 			if(this.state.isPlayerBlue) Panel = <div>{this.renderPanelRow(2)}{this.renderPanelRow(3)}</div>;
 			else Panel = <div>{this.renderPanelRow(0)}{this.renderPanelRow(1)}</div>;
 		}
 
-		if(this.state.isSetup) readyButton = <button onClick={()=>this.readyClick()}>Ready</button>;
+		if(this.state.isSetup) readyButton = <button className="btn btn-success" onClick={()=>this.readyClick()}>Ready</button>;
 
 		if(!this.state.isSetup){
-			timerPanelRed = <p>Red is left with <p>{this.state.redTime}</p></p>;
-			timerPanelBlue = <p>Blue is left with <p>{this.state.blueTime}</p></p>;
+			timerPanelRed = <p className = "badge badge-danger" >Red is left with <p>{this.state.redTime}</p></p>;
+			timerPanelBlue = <p className = "badge badge-primary">Blue is left with <p>{this.state.blueTime}</p></p>;
 		}	
 
-		if(this.state.isGameOn && !this.state.isSetup) resignButton = <button onClick={()=>{this.socket.emit("win", this.state.isPlayerBlue?0:1);}}>Resign</button>
+		if(this.state.isGameOn) resignButton = <button className="btn btn-danger" onClick={()=>this.resignClick()}>Resign</button>
+
+		if(this.state.isSetup){
+			if(!this.state.clickMask){
+				turnDetails = <h3>Setup Your Board</h3>
+			} else {
+				turnDetails = <h3>Waiting For Opponent to Setup</h3>
+			}
+		} else {
+			if(this.state.isPlayerBlue === this.state.blueTurn){
+				turnDetails = <h3>Your Turn</h3>
+			} else {
+				turnDetails = <h3>Opponent's Turn</h3>
+			}
+		}
 
 		if(this.state.isPlayerBlue){
 			return (
@@ -846,10 +863,21 @@ class Board extends React.Component {
 						
 						
 					</span>
-					
+					<div classname="show-content">
+						{turnDetails}
+						<div className="row justify-content-between">
+							<div className="col-6"><h3>Opponent's Score: {this.state.redScore}</h3></div>  <div className="col-2"><h3>Your Score: {this.state.blueScore}</h3></div>
+						
+							<div className="col-2">
+								{timerPanelRed}
+							</div>
+							<div classname="col-2">
+								{timerPanelBlue}
+							</div>
+						</div>
+					</div>
 					<div className='table'>
 					
-					<span className=''><br></br><h3>Your Opponent's Score: {this.state.redScore}</h3><br></br></span>
 					<span className="">
 						
 
@@ -870,13 +898,15 @@ class Board extends React.Component {
 						<br></br>
 						{Panel}
 						<br></br>
-						{readyButton}
-						{resignButton}
-						<br></br>
-						{timerPanelRed}
-						{timerPanelBlue}
+						<div className="row">
+							<div className="col-2">{readyButton}</div>
+							<div className="col-8"></div>
+							<div className="col-2">{resignButton}</div>
+						</div>
+						
+						
 					</span>
-					<span className=''><h3>Your Score: {this.state.blueScore}</h3></span>
+					
 					</div>
 					<span className='footer'>Copyright (C) Technothlon 2019-20</span>
 				</div>
@@ -893,9 +923,20 @@ class Board extends React.Component {
   						</Navbar>
 						
 					</span>
-					
+					<div classname="show-content">
+						{turnDetails}
+						<div className="row justify-content-between">
+							<div className="col-6"><h3>Opponent's Score: {this.state.redScore}</h3></div>  <div className="col-2 align-item-right"><h3>Your Score: {this.state.blueScore}</h3></div>
+						
+							<div className="col-2">
+								{timerPanelRed}
+							</div>
+							<div classname="col-2">
+								{timerPanelBlue}
+							</div>
+						</div>
+					</div>
 					<div className='table'>
-					<span className=''><br></br><h3>Your Opponent's Score: {this.state.blueScore}</h3><br></br></span>
 					<span className="">
 
 						{this.renderRow(0)}
@@ -915,19 +956,28 @@ class Board extends React.Component {
 						<br></br>
 						{Panel}
 						<br></br>
-						{readyButton}
-						{resignButton}
-						<br></br>
-						{timerPanelRed}
-						{timerPanelBlue}
+						<div className="row">
+							<div className="col-2">{readyButton}</div>
+							<div className="col-8"></div>
+							<div className="col-2">{resignButton}</div>
+						</div>
 					</span>
-					<span className=''><h3>Your Score: {this.state.redScore}</h3></span>
+
 					</div>
 					<div className='footer'>Copyright (C) Technothlon 2019-20</div>
 				</div>
 				);
 		}
 
+	}
+	resignClick(){
+		var quit = prompt("Type: RESIGN to end match");
+		if(quit.toUpperCase() === "RESIGN"){
+			this.socket.emit("win", this.state.isPlayerBlue?0:1);
+		} else {
+			alert("You could not resign");
+			return;
+		}
 	}
 
 	readyClick(){
