@@ -13,7 +13,7 @@ const matchSchema = mongoose.Schema({
     },
 
     room:{
-        type:String,
+        type:Number,
     },
 
     redPoint: {
@@ -38,4 +38,4 @@ const matchSchema = mongoose.Schema({
 
 })
 
-module.exports = mongoose.model("matchs", matchSchema);
+module.exports = mongoose.model("match", matchSchema);
