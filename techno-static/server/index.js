@@ -13,25 +13,25 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 
-// mongoose.connect("mongodb+srv://Shridam:Techno20@cluster0.zrjf3.mongodb.net/Innovate?retryWrites=true&w=majority", {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-// })
-// .then(() => console.log("Database connected"))
-// .catch((err) => {
-//     console.error("DB Connection Error: ${err.message}");
-// });
+mongoose.connect("mongodb://localhost:27017/techno", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+.then(() => console.log("Database connected"))
+.catch((err) => {
+    console.error("DB Connection Error: ${err.message}");
+});
 
-// const Match = require("./match");
-// const { match } = require('assert');
+const Match = require("./match");
+const { match } = require('assert');
 
-var match = {
-    userRed: null,
-    userBlue: null,
-    bluePoint: 0,
-    redPoint: 0,
-    winner: null
-}
+// var match = {
+//     userRed: null,
+//     userBlue: null,
+//     bluePoint: 0,
+//     redPoint: 0,
+//     winner: null
+// }
 const maxTime = 20*60;
 
 
@@ -118,24 +118,24 @@ io.on('connection', (socket) => {
                 socket.emit("roomid", { roomid: data, isPlayerBlue: false, roomState: rooms[data].roomState});
                 console.log("room created at " + data);
 
-                // Match.findOne({ room: data })
-                //     .exec()
-                //     .then((match) => {
-                //         if(match !== null) {
-                //             return;
-                //         }
-                //
-                //         const match2 = new Match({
-                //             _id: new mongoose.Types.ObjectId(),
-                //             userRed: rollno,
-                //             room: data,
-                //         })
-                //
-                //         match2.save();
-                //     })
-                //     .catch(err => {
-                //         console.log(err);
-                //     })
+                Match.findOne({ room: data })
+                    .exec()
+                    .then((match) => {
+                        if(match !== null) {
+                            return;
+                        }
+                
+                        const match2 = new Match({
+                            _id: new mongoose.Types.ObjectId(),
+                            userRed: rollno,
+                            room: data,
+                        })
+                
+                        match2.save();
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
 
             } else {
                 if (rooms[data].red === undefined) {
@@ -264,19 +264,19 @@ io.on('connection', (socket) => {
                         io.to(socketIds[socket.id]).emit("Ended", 1);
                         rooms[socketIds[socket.id]].roomState.isGameOn = false;
                         rooms[socketIds[socket.id]].roomState.blueScore += 180;
-                        // Match.findOne({room: socketIds[socket.id]})
-                        //     .exec()
-                        //     .then((match) => {
+                        Match.findOne({room: socketIds[socket.id]})
+                            .exec()
+                            .then((match) => {
                                 match.winner = 1;
                                 match.redTime = timeintervals[socketIds[socket.id]].red;
                                 match.blueTime = timeintervals[socketIds[socket.id]].blue;
                                 match.redPoint = rooms[socketIds[socket.id]].roomState.redScore;
                                 match.bluePoint = rooms[socketIds[socket.id]].roomState.blueScore;
-                        //         match.save();
-                        //     })
-                        //     .catch((err) => {
-                        //         console.error(err);
-                        //     })
+                                match.save();
+                            })
+                            .catch((err) => {
+                                console.error(err);
+                            })
                         clearInterval(intervals[socketIds[socket.id]]);
                     }
                 }
