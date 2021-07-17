@@ -245,7 +245,4 @@ Project Link: [https://github.com/theprakharrajpali/ArtOfWar](https://github.com
 [license-url]: https://github.com/theprakharrajpali/ArtOfWar/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/prakharrajpali
-=======
 
-3. npm start
->>>>>>> ac21bd826d6c7701a20e923728eacb4fe4b5cd99
