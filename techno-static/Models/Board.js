@@ -199,7 +199,7 @@ class Board {
         return square;
     }
 
-    setPiece(square, piece player){
+    setPiece(square, piece, player){
 
         square.curr = piece;
         piece.pos = square.pos;

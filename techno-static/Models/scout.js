@@ -6,4 +6,5 @@ class Scout extends Piece {
         this.name = 'scout';
         this.rank = 2;
     }
-}module.exports = Scout;
+}
+module.exports = Scout;
