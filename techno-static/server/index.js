@@ -13,19 +13,25 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 
-mongoose.connect("mongodb+srv://Shridam:Techno20@cluster0.zrjf3.mongodb.net/Innovate?retryWrites=true&w=majority", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-.then(() => console.log("Database connected"))
-.catch((err) => {
-    console.error("DB Connection Error: ${err.message}");
-});
+// mongoose.connect("mongodb+srv://Shridam:Techno20@cluster0.zrjf3.mongodb.net/Innovate?retryWrites=true&w=majority", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+// })
+// .then(() => console.log("Database connected"))
+// .catch((err) => {
+//     console.error("DB Connection Error: ${err.message}");
+// });
 
-const Match = require("./match");
+// const Match = require("./match");
 // const { match } = require('assert');
 
-
+var match = {
+    userRed: null,
+    userBlue: null,
+    bluePoint: 0,
+    redPoint: 0,
+    winner: null
+}
 const maxTime = 20*60;
 
 
@@ -68,15 +74,17 @@ io.on('connection', (socket) => {
         rooms[socketIds[socket.id]].roomState.redScore = data.redScore;
         rooms[socketIds[socket.id]].roomState.isGameOn = data.isGameOn;
         rooms[socketIds[socket.id]].roomState.blueTurn = data.turn;
-        Match.findOne({ room: data.room}).then((match) => {
+        // Match.findOne({ room: data.room}).then((match) => {
             match.redTime = timeintervals[socketIds[socket.id]].red;
             match.blueTime = timeintervals[socketIds[socket.id]].blue;
             match.redPoint = rooms[socketIds[socket.id]].roomState.redScore;
             match.bluePoint = rooms[socketIds[socket.id]].roomState.blueScore;
-            match.save();
-        }).catch(err => console.log(err))
+        //     match.save();
+        // }).catch(err => console.log(err))
         io.to(socketIds[socket.id]).emit("move", rooms[socketIds[socket.id]].roomState);
     });
+
+
 
 	socket.on("join", (dict) => {
         var data = dict.data;
@@ -110,25 +118,25 @@ io.on('connection', (socket) => {
                 socket.emit("roomid", { roomid: data, isPlayerBlue: false, roomState: rooms[data].roomState});
                 console.log("room created at " + data);
 
-                Match.findOne({ room: data })
-                    .exec()
-                    .then((match) => {
-                        if(match !== null) {
-                            return;
-                        }
-                        
-                        const match2 = new Match({
-                            _id: new mongoose.Types.ObjectId(),
-                            userRed: rollno,
-                            room: data,
-                        })
+                // Match.findOne({ room: data })
+                //     .exec()
+                //     .then((match) => {
+                //         if(match !== null) {
+                //             return;
+                //         }
+                //
+                //         const match2 = new Match({
+                //             _id: new mongoose.Types.ObjectId(),
+                //             userRed: rollno,
+                //             room: data,
+                //         })
+                //
+                //         match2.save();
+                //     })
+                //     .catch(err => {
+                //         console.log(err);
+                //     })
 
-                        match2.save();
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    })
-                
             } else {
                 if (rooms[data].red === undefined) {
                     Match.findOne({ room: data }).then((match) => {
@@ -148,21 +156,21 @@ io.on('connection', (socket) => {
                             socket.emit("roomid", { roomid: data,isPlayerBlue: true, roomState: rooms[data].roomState});
                         }
                     })
-                    .catch(err => console.log(err))   
+                    .catch(err => console.log(err))
                 } else if(rooms[data].blue === undefined){
-                    Match.findOne({room: data}).then((match) => {
+                    // Match.findOne({room: data}).then((match) => {
                         rooms[data].blue = socket.id;
                         rooms[data].limit += 1;
                         socket.emit("roomid", { roomid: data,isPlayerBlue: true, roomState: rooms[data].roomState});
-                        console.log("blue boi in");
+                    //     console.log("blue boi in");
                         match.userBlue = rollno;
-                        match.save()
-                    })
-                    .catch(err => console.log(err))
-                    
+                    //     match.save()
+                    // })
+                    // .catch(err => console.log(err))
+
                 }
             }
-            
+
         }
     });
 
@@ -196,23 +204,23 @@ io.on('connection', (socket) => {
         if(data===0 && rooms[socketIds[socket.id]].roomState.redScore < 180)  rooms[socketIds[socket.id]].roomState.redScore += 180;
         if(data===1 && rooms[socketIds[socket.id]].roomState.blueScore < 180)  rooms[socketIds[socket.id]].roomState.blueScore += 180;
 
-        Match.findOne({room: socketIds[socket.id]})
-            .exec()
-            .then((match) => {
+        // Match.findOne({room: socketIds[socket.id]})
+        //     .exec()
+        //     .then((match) => {
                 match.winner = data;
                 match.redTime = timeintervals[socketIds[socket.id]].red;
                 match.blueTime = timeintervals[socketIds[socket.id]].blue;
                 match.redPoint = rooms[socketIds[socket.id]].roomState.redScore;
                 match.bluePoint = rooms[socketIds[socket.id]].roomState.blueScore;
-                match.save();
-            })
-            .catch((err) => {
-                console.error(err);
-            })
+        //         match.save();
+        //     })
+        //     .catch((err) => {
+        //         console.error(err);
+        //     })
         rooms[socketIds[socket.id]].roomState.isGameOn = false;
         clearInterval(intervals[socketIds[socket.id]]);
 
-        
+
 
     });
 
@@ -235,19 +243,19 @@ io.on('connection', (socket) => {
                         io.to(socketIds[socket.id]).emit("Ended", 0);
                         rooms[socketIds[socket.id]].roomState.isGameOn = false;
                         rooms[socketIds[socket.id]].roomState.redScore += 180;
-                        Match.findOne({room: socketIds[socket.id]})
-                            .exec()
-                            .then((match) => {
+                        // Match.findOne({room: socketIds[socket.id]})
+                        //     .exec()
+                        //     .then((match) => {
                                 match.winner = 0;
                                 match.redTime = timeintervals[socketIds[socket.id]].red;
                                 match.blueTime = timeintervals[socketIds[socket.id]].blue;
                                 match.redPoint = rooms[socketIds[socket.id]].roomState.redScore;
                                 match.bluePoint = rooms[socketIds[socket.id]].roomState.blueScore;
-                                match.save();
-                            })
-                            .catch((err) => {
-                                console.error(err);
-                            })
+                        //         match.save();
+                        //     })
+                        //     .catch((err) => {
+                        //         console.error(err);
+                        //     })
                         clearInterval(intervals[socketIds[socket.id]]);
                     }
                 } else {
@@ -256,19 +264,19 @@ io.on('connection', (socket) => {
                         io.to(socketIds[socket.id]).emit("Ended", 1);
                         rooms[socketIds[socket.id]].roomState.isGameOn = false;
                         rooms[socketIds[socket.id]].roomState.blueScore += 180;
-                        Match.findOne({room: socketIds[socket.id]})
-                            .exec()
-                            .then((match) => {
+                        // Match.findOne({room: socketIds[socket.id]})
+                        //     .exec()
+                        //     .then((match) => {
                                 match.winner = 1;
                                 match.redTime = timeintervals[socketIds[socket.id]].red;
                                 match.blueTime = timeintervals[socketIds[socket.id]].blue;
                                 match.redPoint = rooms[socketIds[socket.id]].roomState.redScore;
                                 match.bluePoint = rooms[socketIds[socket.id]].roomState.blueScore;
-                                match.save();
-                            })
-                            .catch((err) => {
-                                console.error(err);
-                            })
+                        //         match.save();
+                        //     })
+                        //     .catch((err) => {
+                        //         console.error(err);
+                        //     })
                         clearInterval(intervals[socketIds[socket.id]]);
                     }
                 }
@@ -313,7 +321,7 @@ function makepieces() { //pieces[0][index] are red, pieces[1][index] are blue.
 
     let redPieces = makePieceArray(false);
     let bluePieces = makePieceArray(true);
-    
+
     pieces.push(redPieces);
     pieces.push(bluePieces);
 

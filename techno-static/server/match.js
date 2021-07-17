@@ -6,7 +6,7 @@ const matchSchema = mongoose.Schema({
     userRed: {
         type: String,
     },
-    
+
     userBlue: {
         type: String,
 
@@ -31,7 +31,7 @@ const matchSchema = mongoose.Schema({
     blueTime:{
         type:Number,
     },
-    
+
     winner:{
         type:Number,
     }

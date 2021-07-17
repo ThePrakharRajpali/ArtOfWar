@@ -16,7 +16,7 @@ const ENDPOINT = 'localhost:5000';
 // const roomId = ({ location }) => {
 // 	const [name, setName] = useState('');
 // 	const [room, setRoom] = useState('');
-	
+
 // 	useEffect(()=>{
 // 		const { name,room }=queryString(location.search);
 // 		socket=io(ENDPOINT);
@@ -75,7 +75,7 @@ class Board extends React.Component {
 		this.socket.emit('join',{data: room, rollno: name});
 
 		this.socket.emit('disconnect',function(){
-			console.log("bye bye!!");				
+			console.log("bye bye!!");
 		});
 
 		this.socket.on("roomid", ({ roomid, isPlayerBlue, roomState }) => {
@@ -92,7 +92,7 @@ class Board extends React.Component {
 				numRed:  roomState.numRed,
 				initialRedPiece: roomState.initialRedPiece,
 				initialBluePiece: roomState.initialBluePiece,
-			});	
+			});
 			console.log("Roomid given");
 		});
 
@@ -147,7 +147,7 @@ class Board extends React.Component {
         	console.log(data);
         	if(this.state.isPlayerBlue==data) alert("Congratulations, You won!!");
             else alert("you lost :( better luck next time");
-            
+
             this.setState({
 			   isGameOn: false,
 			   ended: 1,
@@ -187,7 +187,7 @@ class Board extends React.Component {
          else if(disp===5) className="squareblueoccupied lieutenantB";
          else if(disp===6) className="squareblueoccupied captainB";
          else if(disp===7) className="squareblueoccupied majorB";
-         else if(disp===8) className="squareblueoccupied colonelB"; 
+         else if(disp===8) className="squareblueoccupied colonelB";
          else if(disp===9) className="squareblueoccupied generalB";
          else if(disp===10) className="squareblueoccupied marshalB";
          else if(disp==='F') className="squareblueoccupied flagB";
@@ -227,7 +227,7 @@ class Board extends React.Component {
 
 		return(
 			<Square
-				className={className + " " + id} 
+				className={className + " " + id}
 				onClick={()=>this.handleClick(i,j)}
 			/>
 			);
@@ -235,7 +235,7 @@ class Board extends React.Component {
 	}
 
 	renderRow(i) {
-		
+
 		if(this.state.isPlayerBlue){
 			return(
 				<div className="board-row">
@@ -271,7 +271,7 @@ class Board extends React.Component {
 	}
 
 	renderPanelSquare(i, j){
-		
+
 		let disp = null;
 		let p=j-1;
 		let className;
@@ -293,9 +293,9 @@ class Board extends React.Component {
 
          if(j==0) disp = 'B';
          if(j==1) disp = 'F';
-		} 
+		}
 
-		else{ 
+		else{
 		 if(p===1) className="squareblueoccupied spyB";
 		 else if(p===2) className="squareblueoccupied scoutB";
 		 else if(p===3) className="squareblueoccupied minerB";
@@ -303,7 +303,7 @@ class Board extends React.Component {
          else if(p===5) className="squareblueoccupied lieutenantB";
          else if(p===6) className="squareblueoccupied captainB";
          else if(p===7) className="squareblueoccupied majorB";
-         else if(p===8) className="squareblueoccupied colonelB"; 
+         else if(p===8) className="squareblueoccupied colonelB";
          else if(p===9) className="squareblueoccupied generalB";
          else if(p===10) className="squareblueoccupied marshalB";
          else if(p===0) className="squareblueoccupied flagB";
@@ -312,7 +312,7 @@ class Board extends React.Component {
 
          if(j==0) disp = 'B';
          if(j==1) disp = 'F';
-		} 
+		}
 			return (
 				<Square
 					className={className}
@@ -359,7 +359,7 @@ class Board extends React.Component {
 	handlePanelClick(i, j){
 		if(this.state.isSetup && !this.state.clickMask){
 			let maxPieces = [6, 1, 1, 7, 5, 5, 4, 4, 3, 2, 1, 1];
-		
+
 			if(!this.state.isListening){
 				let curr= 0
 				let k = 0;
@@ -367,11 +367,11 @@ class Board extends React.Component {
 					curr += maxPieces[k];
 					k++;
 				}
-	
+
 				while(curr<40 && this.state.pieces[i/2][curr].pos !== null){
 					curr++;
 				}
-				
+
 				if(curr<40 && this.state.pieces[i/2][curr].rank +1 !== j){
 					return;
 				}
@@ -379,7 +379,7 @@ class Board extends React.Component {
 				if(curr >= 40){
 					return;
 				}
-	
+
 				this.setState({
 					isListening: true,
 					pieceToAdd: [i/2, curr]
@@ -404,7 +404,7 @@ class Board extends React.Component {
 		let redPieces = this.state.initialRedPiece.slice();
 		let bluePieces = this.state.initialBluePiece.slice();
 
-		{	
+		{
 			if(newPieces[pieceColor][pieceIndex].pos === null){
 				if(pieceColor === 1 && 10*i + j <= 39){
 					newSquares[10*i + j].pieceid = {
@@ -548,7 +548,7 @@ class Board extends React.Component {
 
 	}
 
-	
+
 	firstClick(i, j) {
 		if(this.state.squares[10*i + j].hasPiece===false || this.state.squares[10*i + j].isLake===true) {
 			return;
@@ -632,7 +632,7 @@ class Board extends React.Component {
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
 
 				newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
-				
+
 				newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
 				newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].pos = 10*i + j;
 				newSquares[10*i+j].hasPiece = true;
@@ -678,7 +678,7 @@ class Board extends React.Component {
 					let nextPieceId = nextSquare.pieceid;
 					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].isAlive = false;
 					newPieces[nextSquare.pieceid.isBlue][nextSquare.pieceid.index].pos = null;
-					
+
 					newSquares[10*i+j].pieceid = newSquares[this.state.lastClicked].pieceid;
 					newPieces[newSquares[10*i+j].pieceid.isBlue][newSquares[10*i+j].pieceid.index].pos = 10*i + j;
 					newSquares[10*i+j].hasPiece = true;
@@ -733,7 +733,7 @@ class Board extends React.Component {
 									} else {
 										redScore += nextRankBlast
 									}
-								}				
+								}
 							}
 						}
 					}
@@ -807,10 +807,10 @@ class Board extends React.Component {
 				this.secondClick(i, j);
 				return;
 			}
-			
+
 		}
 	}
-	
+
 	render() {
 
 		let Panel = null;
@@ -830,7 +830,7 @@ class Board extends React.Component {
 		if(!this.state.isSetup){
 			timerPanelRed = <p className = "bg-danger" >Red is left with <p>{this.state.redTime}</p></p>;
 			timerPanelBlue = <p className = "bg-primary">Blue is left with <p>{this.state.blueTime}</p></p>;
-		}	
+		}
 
 		if(this.state.isGameOn) resignButton = <button className="btn btn-danger" onClick={()=>this.resignClick()}>Resign</button>
 
@@ -858,8 +858,8 @@ class Board extends React.Component {
 							<Navbar.Brand className='mx-auto' href="#"><h1>Ultimate Stratego</h1></Navbar.Brand>
 							<span className='help'><Help/></span>
   						</Navbar>
-						
-						
+
+
 					</span>
 					<div className="show-content bg-success text-white">
 						<div className="row justify-content-between text-center">
@@ -885,9 +885,9 @@ class Board extends React.Component {
 						</div>
 					</div>
 					<div className='table'>
-					
+
 					<span className="">
-						
+
 
 						{this.renderRow(11)}
 						{this.renderRow(10)}
@@ -911,10 +911,10 @@ class Board extends React.Component {
 							<div className="col-8"></div>
 							<div className="col-2">{resignButton}</div>
 						</div>
-						
-						
+
+
 					</span>
-					
+
 					</div>
 					<span className='footer'>Copyright (C) Technothlon 2019-20</span>
 				</div>
@@ -929,7 +929,7 @@ class Board extends React.Component {
     						<Navbar.Brand className='mx-auto' href="#"><h1>Ultimate Stratego</h1></Navbar.Brand>
 							<span className='help'><Help/></span>
   						</Navbar>
-						
+
 					</span>
 					<div className="show-content bg-success text-white">
 						<div className="row justify-content-between text-center">
@@ -951,7 +951,7 @@ class Board extends React.Component {
 								<h5>You joined room {this.state.room}</h5>
 							</div>
 							<div className="col-4">
-								<h5>You are Blue</h5>
+								<h5>You are Red</h5>
 							</div>
 						</div>
 					</div>
@@ -991,7 +991,7 @@ class Board extends React.Component {
 	}
 
 	resignClick(){
-		
+
 		if(window.confirm("Are you sure you want to give up?")){
 			this.socket.emit("win", this.state.isPlayerBlue?0:1);
 		}
@@ -1006,11 +1006,11 @@ class Board extends React.Component {
 			console.log(this.state.numBlue);
 			console.log(this.state.numRed);
 			if(this.state.isPlayerBlue){
-				
+
 				if(this.state.numBlue<40) alert('Place all pieces first.');
 				else {
 					this.socket.emit("ready",function(){
-						console.log("Blue is Ready");				
+						console.log("Blue is Ready");
 					});
 
 					this.setState({clickMask:true});
@@ -1019,7 +1019,7 @@ class Board extends React.Component {
 				if(this.state.numRed<40) alert('Place all pieces first.');
 				else {
 					this.socket.emit("ready",function(){
-						console.log("Red is ready");				
+						console.log("Red is ready");
 					});
 
 					this.setState({clickMask:true});
@@ -1058,7 +1058,7 @@ function makepieces() { //pieces[0][index] are red, pieces[1][index] are blue.
 
 	let redPieces = makePieceArray(false);
 	let bluePieces = makePieceArray(true);
-	
+
 	pieces.push(redPieces);
 	pieces.push(bluePieces);
 
@@ -1132,16 +1132,16 @@ function pieceMaker(isBlue, rank, isMovable) {
 
 function Help() {
 	const [show, setShow] = useState(false);
-  
+
 	const handleClose = () => setShow(false);
 	const handleShow = () => setShow(true);
-  
+
 	return (
 	  <span>
 		<Button variant="primary" onClick={handleShow}>
 		  Help
 		</Button>
-  
+
 		<Modal show={show} onHide={handleClose}>
 		  <Modal.Header closeButton>
 			<Modal.Title> Art Of War </Modal.Title>
@@ -1152,11 +1152,11 @@ function Help() {
 
 				<h3>Pieces</h3>
 				<p>
-					You have 33 movable pieces. 
+					You have 33 movable pieces.
 					<br></br>
-					Each piece has a rank which is the number on it. 
+					Each piece has a rank which is the number on it.
 					<br></br>
-					You have 1 flag and 6 bomb, which are not movable. 
+					You have 1 flag and 6 bomb, which are not movable.
 					<br></br>
 					This makes a total of 40 pieces.
 				</p>
@@ -1182,7 +1182,7 @@ function Help() {
 					<br></br>
 					In case there is a tie, both pieces will die.
 					<br></br>
-					Spy(rank 1 or S) and Bomb have special privileges. 
+					Spy(rank 1 or S) and Bomb have special privileges.
 					<br></br>
 					<strong>Spy : </strong> it is a special piece. It is of lowest rank in movable pieces. BUT, if it attacks any piece(apart from bomb), it will always win. But if any other piece attack on Spy, Spy will always lose.
 					<br></br>
@@ -1228,7 +1228,7 @@ const popover = (
 	  </Popover.Content>
 	</Popover>
   );
-  
+
   const TechnoLogo = () => (
 	<OverlayTrigger trigger="click" placement="right" overlay={popover}>
 		<a href='#'><img src={logo} alt='technologo'></img></a>
