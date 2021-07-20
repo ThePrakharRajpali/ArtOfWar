@@ -286,7 +286,7 @@ Project Link: [https://github.com/theprakharrajpali/ArtOfWar](https://github.com
 * [Piyush Tiwari](https://github.com/piyush-tiwari)
 * [Shirin Mansoori](https://github.com/shirin-mansoori)
 * [Tanmay Sutar](https://github.com/Tanny2109)
-* [Chekkapalli Venkat Vikas](chekkapalli.venkat@iitg.ac.in)
+* [Chekkapalli Venkat Vikas](https://github.com/vikas-4402)
 
 
 
