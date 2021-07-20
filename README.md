@@ -29,14 +29,7 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-* [Shirdam Mahajan](https://github.com/shridam1207)
-* [Prakhar Rajpali](https://github.com/ThePrakharRajpali/)
-* [Piyush Tiwari](https://github.com/piyush-tiwari)
-* [Chekkapalli Venkat Vikas](chekkapalli.venkat@iitg.ac.in)
-* [Shirin Mansoori](https://github.com/shirin-mansoori)
-* [Tanmay Sutar](https://github.com/Tanny2109)
+
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
@@ -60,8 +53,14 @@
   </p>
 </p>
 
-
-
+<!-- ACKNOWLEDGEMENTS -->
+## Acknowledgements
+* [Shirdam Mahajan](https://github.com/shridam1207)
+* [Prakhar Rajpali](https://github.com/ThePrakharRajpali/)
+* [Piyush Tiwari](https://github.com/piyush-tiwari)
+* [Chekkapalli Venkat Vikas](chekkapalli.venkat@iitg.ac.in)
+* [Shirin Mansoori](https://github.com/shirin-mansoori)
+* [Tanmay Sutar](https://github.com/Tanny2109)
 <!-- TABLE OF CONTENTS -->
 <details open="open">
   <summary><h2 style="display: inline-block">Table of Contents</h2></summary>
