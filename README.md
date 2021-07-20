@@ -29,19 +29,18 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-<!-- [![MIT License][license-shield]][license-url] -->
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
-
+<!-- ACKNOWLEDGEMENTS -->
+## Acknowledgements
+* [Shirdam Mahajan](https://github.com/shridam1207)
+* [Prakhar Rajpali](https://github.com/ThePrakharRajpali/)
+* [Piyush Tiwari](https://github.com/piyush-tiwari)
+* [Chekkapalli Venkat Vikas](chekkapalli.venkat@iitg.ac.in)
+* [Shirin Mansoori](https://github.com/shirin-mansoori)
+* [Tanmay Sutar](https://github.com/Tanny2109)
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/theprakharrajpali/ArtOfWar">
+  <a href="https://github.com/vikas4402/ArtOfWar">
     <img src="./readme_assets/Technothlon_full_logo.png" alt="Logo" width="auto" height="80">
   </a>
 
@@ -121,7 +120,7 @@ To get a local copy up and running follow these simple steps.
   npm install npm@latest -g
   ```
 
-* nodemon
+* nodemon 
   ```sh
   npm install -g nodemon
   ```
@@ -208,15 +207,15 @@ Board is 12 x 10 rectangular grid. There are two lakes in middle. Your piece can
 * Arrange Your Pieces On board by clicking on panel and then clicking board. You can arrange in only first 4 rows. You can interchange pieces on board by clicking them and swapping them.
 
     Note: you can rearrange the pieces only before clicking ready.
-
+    
 * The way your opponent arranged his/her pieces is hidden to you..
-
+    
 * Once you and your opponent are both ready, the game will start. The timer will start running. Both player will be given twenty minutes each.
-
+    
 * For moving pieces, you can click on it and move to any one of the green highlighted pieces in 4 directions.
-
+    
 * On clicking your piece, if there is an opponent piece in neighbouring squares, it will be highlighted purple. You can click on purple square to attack on opponent's piece.
-
+  
 * If you capture opponents flag or your opponent's timer runs out or if opponent resigns, you win.
 
 ### Movement And Attacking
@@ -225,19 +224,19 @@ Board is 12 x 10 rectangular grid. There are two lakes in middle. Your piece can
 * If piece(attacking piece) has opponent's piece(defending piece) in neighbouring square, it can attack it. Piece with higher rank wins and losing piece is removed from the board. Winning piece will placed on defending piece's square.
 * In case there is a tie, both pieces will die.
 * Spy(rank 1 or S) and Bomb have special privileges.
-
-    **Spy** :
+  
+    **Spy** : 
 
     It is a special piece. It is of lowest rank in movable pieces. BUT, if it attacks any piece(apart from bomb), it will always win. But if any other piece attack on Spy, Spy will always lose.
 
-    **Bomb** :
+    **Bomb** : 
 
     It is an immovable piece. Its position is fixed from the start of the game. If any piece(including Spy) (except rank "3") attacks on Bomb, it will blast in 3 x 3 squares around it. Any enemy piece(s) in the radius will die. The bomb will also die/removed. If Rank 3 attacks Bomb, Bomb will die.
 
-* Flag :
-
-It is immovable but most important piece. If you lose flag , you lose the match.
-
+* Flag : 
+  
+It is immovable but most important piece. If you lose flag , you lose the match. 
+  
 HINTS for defending: You can keep your flag at edges or corners and surround it with bombs and maybe a high ranking piece.
 
 <br>
@@ -271,27 +270,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
  -->
 
-<!-- CONTACT -->
-## Contact
-
-Prakhar Rajpali - [@prakharrajpali](https://linkedin.com/in/prakharrajpali) - rajpaliprakhar23@gmail.com
-
-Project Link: [https://github.com/theprakharrajpali/ArtOfWar](https://github.com/theprakharrajpali/ArtOfWar)
-
-
-
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-* [Shirdam Mahajan](https://github.com/shridam1207)
-* [Piyush Tiwari](https://github.com/piyush-tiwari)
-* [Shirin Mansoori](https://github.com/shirin-mansoori)
-* [Tanmay Sutar](https://github.com/Tanny2109)
-* [Chekkapalli Venkat Vikas](https://github.com/vikas-4402)
-
-
-
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/theprakharrajpali/ArtOfWar.svg?style=for-the-badge
@@ -306,4 +284,3 @@ Project Link: [https://github.com/theprakharrajpali/ArtOfWar](https://github.com
 [license-url]: https://github.com/theprakharrajpali/ArtOfWar/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 
-[linkedin-url]: https://linkedin.com/in/prakharrajpali
