@@ -33,7 +33,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/vikas4402/ArtOfWar">
+  <a href="https://github.com/vikas-4402/ArtOfWar">
     <img src="./readme_assets/Technothlon_full_logo.png" alt="Logo" width="auto" height="80">
   </a>
 
@@ -42,10 +42,10 @@
   <p align="center">
     It is a two-player web-based board game for participants qualified for mains level of  Technothlon
     <br />
-    <a href="https://github.com/theprakharrajpali/ArtOfWar"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/vikas-4402/ArtOfWar"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/theprakharrajpali/ArtOfWar">View Demo</a>
+    <a href="https://github.com/vikas-4402/ArtOfWar">View Demo</a>
     ·
     <a href="https://github.com/theprakharrajpali/ArtOfWar/issues">Report Bug</a>
     ·
@@ -58,7 +58,7 @@
 * [Shirdam Mahajan](https://github.com/shridam1207)
 * [Prakhar Rajpali](https://github.com/ThePrakharRajpali/)
 * [Piyush Tiwari](https://github.com/piyush-tiwari)
-* [Chekkapalli Venkat Vikas](chekkapalli.venkat@iitg.ac.in)
+* [Chekkapalli Venkat Vikas](https://github.com/vikas-4402)
 * [Shirin Mansoori](https://github.com/shirin-mansoori)
 * [Tanmay Sutar](https://github.com/Tanny2109)
 <!-- TABLE OF CONTENTS -->
