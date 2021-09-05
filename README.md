@@ -287,7 +287,7 @@ Project Link: [https://github.com/theprakharrajpali/ArtOfWar](https://github.com
 * [Shirin Mansoori](https://github.com/shirin-mansoori)
 * [Tanmay Sutar](https://github.com/Tanny2109)
 * [Chekkapalli Venkat Vikas](https://github.com/vikas-4402)
-* [Prasurjya Das]()
+* [Prasurjya Das](https://github.com/premiumdas)
 
 
 
